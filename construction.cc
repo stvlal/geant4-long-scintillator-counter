@@ -28,45 +28,51 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
     // ------------ Generate & Add Material Properties Table ------------
 
-    // the vector of optical photon energies (were taken from GEAT4 example: OpNovice)
-    std::vector<G4double> photonEnergy = {
-    2.034 * eV, 2.068 * eV, 2.103 * eV, 2.139 * eV, 2.177 * eV, 2.216 * eV,
-    2.256 * eV, 2.298 * eV, 2.341 * eV, 2.386 * eV, 2.433 * eV, 2.481 * eV,
-    2.532 * eV, 2.585 * eV, 2.640 * eV, 2.697 * eV, 2.757 * eV, 2.820 * eV,
-    2.885 * eV, 2.954 * eV, 3.026 * eV, 3.102 * eV, 3.181 * eV, 3.265 * eV,
-    3.353 * eV, 3.446 * eV, 3.545 * eV, 3.649 * eV, 3.760 * eV, 3.877 * eV,
-    4.002 * eV, 4.136 * eV
+    // wavelength obtained from the graph
+    std::vector<G4double> wavelength = {
+    398.346, 401.674, 403.006, 403.907, 404.730, 405.396, 406.415, 407.629, 408.335, 409.158, 410.294, 411.117, 412.097, 412.724, 413.469, 414.096, 414.645, 415.155, 415.822, 416.410, 417.037, 417.586, 418.253, 418.841, 419.429, 419.939, 420.566, 421.506, 422.368, 423.269, 424.131, 425.462, 427.224, 428.125, 429.064, 430.748, 432.940, 434.584, 435.954, 437.324, 438.968, 440.690, 443.117, 446.013, 448.009, 450.397, 452.081, 454.273, 456.230, 459.519, 462.142, 464.217, 466.135, 467.858, 469.659, 471.498, 473.260, 475.648, 478.232, 479.680, 481.520, 483.556, 486.571, 490.095, 493.188, 496.281, 499.649
     };
 
-    // 2 vectors down below are the normalized number of photons with a given energy in the fast and slow scintillation components, respectively; (were taken from GEAT4 example: OpNovice; not clear how to get them for EJ-200)
-    std::vector<G4double> scintilFast = {
-    1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-    1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-    1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00
-    }; // water
+    // the vector of optical photon energies
+    std::vector<G4double> photonEnergy;
 
-    std::vector<G4double> scintilSlow = {
-    0.01, 1.00, 2.00, 3.00, 4.00, 5.00, 6.00, 7.00, 8.00, 9.00, 8.00,
-    7.00, 6.00, 4.00, 3.00, 2.00, 1.00, 0.01, 1.00, 2.00, 3.00, 4.00,
-    5.00, 6.00, 7.00, 8.00, 9.00, 8.00, 7.00, 6.00, 5.00, 4.00
-    }; // water
+    const G4double plankConst = 4.135667669e-15;
+    const G4double lightSpeed = 299792458;
+
+    // filling out the vector of optical photon energies
+    for (G4int i = 0; i < wavelength.size(); ++i)
+    {
+        photonEnergy.push_back(plankConst * lightSpeed * 1e9 * eV / wavelength[i]);
+    }
+
+/*
+    G4cout << "Points: " << wavelength.size() << G4endl;
+    for (G4int i = 0; i < wavelength.size(); ++i)
+    {
+        G4cout << photonEnergy[i] / eV << "\t" << wavelength[i] << G4endl;
+    }
+*/
+
+    // the vector down below are the normalized number of photons with a given energy in the fast scintillation component
+    std::vector<G4double> scintilFast = {
+    0.00959, 0.01637, 0.03138, 0.05050, 0.07098, 0.09352, 0.12493, 0.16318, 0.19528, 0.22533, 0.27177, 0.30866, 0.35647, 0.39063, 0.43503, 0.47465, 0.50812, 0.54569, 0.58736, 0.62493, 0.67002, 0.71442, 0.75404, 0.79708, 0.82850, 0.86676, 0.90365, 0.93984, 0.96921, 0.98355, 0.99036, 0.99376, 0.98758, 0.97936, 0.96705, 0.94242, 0.90548, 0.87744, 0.84804, 0.81795, 0.77146, 0.73453, 0.67709, 0.61828, 0.57998, 0.53962, 0.51705, 0.48899, 0.46641, 0.43356, 0.41370, 0.39111, 0.36580, 0.34254, 0.30903, 0.27620, 0.24952, 0.21941, 0.18999, 0.17698, 0.15918, 0.14070, 0.11673, 0.09822, 0.08040, 0.06737, 0.05433
+    };
+
 
     // the refractive index for the slab material; it is assumed that there is no dispersion in the medium
-    std::vector<G4double> rindexSlab = {
-    1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58,
-    1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58,
-    1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58, 1.58
-    }; // EJ-200
+    std::vector<G4double> rindexSlab;
+    for (G4int i = 0; i < wavelength.size(); ++i)
+    {
+        rindexSlab.push_back(1.58);
+    }
+
 
     // the absorption length for the slab material
-    std::vector<G4double> absorptionSlab = {
-    380 * cm, 380 * cm, 380 * cm, 380 * cm, 380 * cm, 380 * cm,
-    380 * cm, 380 * cm, 380 * cm, 380 * cm, 380 * cm, 380 * cm,
-    380 * cm, 380 * cm, 380 * cm, 380 * cm, 380 * cm, 380 * cm,
-    380 * cm, 380 * cm, 380 * cm, 380 * cm, 380 * cm, 380 * cm,
-    380 * cm, 380 * cm, 380 * cm, 380 * cm, 380 * cm, 380 * cm,
-    380 * cm, 380 * cm
-    }; // EJ-200
+    std::vector<G4double> absorptionSlab;
+    for (G4int i = 0; i < wavelength.size(); ++i)
+    {
+        absorptionSlab.push_back(380 * cm);
+    }
 
     // construct the material properties table for the slab
     G4MaterialPropertiesTable *mptSlab = new G4MaterialPropertiesTable();
@@ -75,7 +81,6 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     mptSlab->AddProperty("RINDEX", photonEnergy, rindexSlab)->SetSpline(true);
     mptSlab->AddProperty("ABSLENGTH", photonEnergy, absorptionSlab)->SetSpline(true);
     mptSlab->AddProperty("FASTCOMPONENT", photonEnergy, scintilFast)->SetSpline(true);
-    mptSlab->AddProperty("SLOWCOMPONENT", photonEnergy, scintilSlow)->SetSpline(true);
 
     // the number of photons that is emitted per amount of energy absorbed
     mptSlab->AddConstProperty("SCINTILLATIONYIELD", 10000 / MeV);
@@ -102,11 +107,11 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     G4MaterialPropertiesTable *mptWorld = new G4MaterialPropertiesTable();
 
     // air refractive index
-    std::vector<G4double> rindexWorld = {
-    1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-    1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-    1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00
-    };
+    std::vector<G4double> rindexWorld;
+    for (G4int i = 0; i < wavelength.size(); ++i)
+    {
+        rindexWorld.push_back(1.0);
+    }
 
     // set the refractive index for the air
     mptWorld->AddProperty("RINDEX", photonEnergy, rindexWorld);

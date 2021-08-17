@@ -33,20 +33,20 @@ int main(int argc, char **argv)
     G4UImanager *UImanager = G4UImanager::GetUIpointer();
 
     // the commands in the /* */ down below can be used to visualize the detector geometry and particle tracks
-    /*
+
     UImanager->ApplyCommand("/vis/open OGL");
     UImanager->ApplyCommand("/vis/viewer/set/viewpointVector 0.22 0.2 0.5");
     UImanager->ApplyCommand("/vis/viewer/zoom 2.6");
     UImanager->ApplyCommand("/vis/drawVolume");
     UImanager->ApplyCommand("/vis/viewer/set/autoRefresh true");
     UImanager->ApplyCommand("/vis/scene/add/trajectories smooth");
-    */
+
 
     // run 1 event (if you use GUI you can execute this command there by hitting corresponding button)
-    UImanager->ApplyCommand("/run/beamOn 1");
+    //UImanager->ApplyCommand("/run/beamOn 1");
 
     // start User Interface session
-    /* ui->SessionStart(); */
+    ui->SessionStart();
 
     return 0;
 }
