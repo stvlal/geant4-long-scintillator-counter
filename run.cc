@@ -1,18 +1,9 @@
 #include "run.hh"
 
 MyRunAction::MyRunAction()
-{}
-
-MyRunAction::~MyRunAction()
-{}
-
-void MyRunAction::BeginOfRunAction(const G4Run*)
 {
     // construct analysis manager
     G4AnalysisManager *man = G4AnalysisManager::Instance();
-
-    // open output file; it will be recreated every time the program run
-    man->OpenFile("output.root");
 
     // create ROOT tree
     man->CreateNtuple("counts", "counts");
@@ -25,6 +16,25 @@ void MyRunAction::BeginOfRunAction(const G4Run*)
                                                 // number of photons registered by the left counter (1+1+1+..+1 = m*1 for the right
                                                 // one). See .root-file for clarification.
     man->FinishNtuple(0);
+}
+
+MyRunAction::~MyRunAction()
+{}
+
+void MyRunAction::BeginOfRunAction(const G4Run* run)
+{
+    // construct analysis manager
+    G4AnalysisManager *man = G4AnalysisManager::Instance();
+
+    // getting the ID of current run
+    G4int runID = run->GetRunID();
+
+    // convert runNumber (integer) to string
+    std::stringstream strRunID;
+    strRunID << runID;
+
+    // open output file; it will be recreated every time the program run
+    man->OpenFile("output_" + strRunID.str() + "_.root");
 }
 
 void MyRunAction::EndOfRunAction(const G4Run*)

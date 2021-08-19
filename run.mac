@@ -1,0 +1,13 @@
+# the first number is the initial random seed and
+# the second one is the number of times a random seed is sampled before starting the simulation
+
+/random/setSeeds 5465 8974
+/run/beamOn 1
+/random/setSeeds 5422 8924
+/run/beamOn 1
+/random/setSeeds 5424 8944
+/run/beamOn 1
+/random/setSeeds 5415 8674
+/run/beamOn 1
+/random/setSeeds 5765 8257
+/run/beamOn 1

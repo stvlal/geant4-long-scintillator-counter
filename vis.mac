@@ -1,0 +1,6 @@
+/vis/open OGL
+/vis/viewer/set/viewpointVector 0.22 0.2 0.5
+/vis/viewer/zoom 2.6
+/vis/drawVolume
+/vis/viewer/set/autoRefresh true
+/vis/scene/add/trajectories smooth

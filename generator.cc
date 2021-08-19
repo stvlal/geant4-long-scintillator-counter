@@ -5,15 +5,7 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     // set the number of particles in 1 event
     fParticleGun = new G4ParticleGun(1);            // for e-
     // fParticleGun = new G4ParticleGun(3e6);       // for gamma
-}
 
-MyPrimaryGenerator::~MyPrimaryGenerator()
-{
-    delete fParticleGun;
-}
-
-void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
-{
     // get the particle for particle gun
     G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
     G4String particleName = "e-";
@@ -31,5 +23,14 @@ void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
     fParticleGun->SetParticleMomentum(3*GeV);           // for e-
     //fParticleGun->SetParticleMomentum(3.5*eV);        // for gamma
     fParticleGun->SetParticleDefinition(particle);
+}
+
+MyPrimaryGenerator::~MyPrimaryGenerator()
+{
+    delete fParticleGun;
+}
+
+void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)
+{
     fParticleGun->GeneratePrimaryVertex(anEvent);
 }

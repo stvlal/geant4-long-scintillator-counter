@@ -22,31 +22,42 @@ int main(int argc, char **argv)
     // initialize G4 kernel
     runManager->Initialize();
 
-    // construct the object of the G4UIExecutive class
-    G4UIExecutive *ui = new G4UIExecutive(argc, argv);
+    // detect interactive mode (if no arguments) and define UI session
+    G4UIExecutive *ui = 0;
+    if (argc == 1)
+    {
+        ui = new G4UIExecutive(argc, argv);
+    }
 
     // construct the visualization manager and initialize it
     G4VisManager *visManager = new G4VisExecutive();
     visManager->Initialize();
 
-    // construct User Interface manager and set verbosities
+    // get the pointer to the User Interface manager
     G4UImanager *UImanager = G4UImanager::GetUIpointer();
 
-    // the commands in the /* */ down below can be used to visualize the detector geometry and particle tracks
+    if(ui)
+    {
+        // interactive mode
+        // the commands in the vis.mac file in the . folder can be used to visualize the detector geometry and particle tracks
+        // apply the commands written in the vis.mac file
+        UImanager->ApplyCommand("/control/execute vis.mac");
 
-    UImanager->ApplyCommand("/vis/open OGL");
-    UImanager->ApplyCommand("/vis/viewer/set/viewpointVector 0.22 0.2 0.5");
-    UImanager->ApplyCommand("/vis/viewer/zoom 2.6");
-    UImanager->ApplyCommand("/vis/drawVolume");
-    UImanager->ApplyCommand("/vis/viewer/set/autoRefresh true");
-    UImanager->ApplyCommand("/vis/scene/add/trajectories smooth");
+        // start User Interface session
+        ui->SessionStart();
+        delete ui;
+    }
+    else
+    {
+        // batch mode
+        G4String command = "/control/execute ";
+        G4String fileName = argv[1];
 
+        UImanager->ApplyCommand(command + fileName);
+    }
 
-    // run 1 event (if you use GUI you can execute this command there by hitting corresponding button)
-    //UImanager->ApplyCommand("/run/beamOn 1");
-
-    // start User Interface session
-    ui->SessionStart();
+    delete visManager;
+    delete runManager;
 
     return 0;
 }
