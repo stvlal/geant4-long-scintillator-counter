@@ -12,15 +12,12 @@ MyDetectorConstruction::~MyDetectorConstruction()
 
 G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
-    // define the density of the material according to the datasheet
-    G4double density;
-    density = 1.023*g/cm3;
-
     // this pointer is used for accessing internal Geant4 database
     G4NistManager *nist = G4NistManager::Instance();
 
-    // set PolyVinylToluene as polymer base with the datasheet density; it is scintillator material
-    G4Material *slabMat = nist->BuildMaterialWithNewDensity("PolyVinylToluene","G4_PLASTIC_SC_VINYLTOLUENE",density);
+    G4Material *slabMat = new G4Material("slabMat", 1.023*g/cm3, 2);
+    slabMat->AddElement(nist->FindOrBuildElement("H"), 10);
+    slabMat->AddElement(nist->FindOrBuildElement("C"), 9);
 
     // set air as the world volume material
     G4Material *worldMat = nist->FindOrBuildMaterial("G4_AIR");
@@ -83,24 +80,22 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     mptSlab->AddProperty("FASTCOMPONENT", photonEnergy, scintilFast)->SetSpline(true);
 
     // the number of photons that is emitted per amount of energy absorbed
-    mptSlab->AddConstProperty("SCINTILLATIONYIELD", 10000 / MeV);
+    mptSlab->AddConstProperty("SCINTILLATIONYIELD", 10000. / MeV);
 
-    // not clear how to calculate RESOLUTIONSCALE; let's just there's RESOLUTIONSCALE = 1;
-    // some information about it can be found at https://opengate.readthedocs.io/en/latest/generating_and_tracking_optical_photons.html#scintillation
+    // let's just there's RESOLUTIONSCALE = 1;
     mptSlab->AddConstProperty("RESOLUTIONSCALE", 1.0);
 
-    // raise time
-    mptSlab->AddConstProperty("FASTTIMECONSTANT", 0.9 * ns);
-
-    // decay time
-    mptSlab->AddConstProperty("SLOWTIMECONSTANT", 2.1 * ns);
+    // no one knows what it is
+    mptSlab->AddConstProperty("FASTTIMECONSTANT", 1. * ns);
 
     // the relative strength of the fast component FASTCOMPONENT as a fraction of total scintillation yield
-    // not clear how to calculate
-    mptSlab->AddConstProperty("YIELDRATIO", 0.8);
+    mptSlab->AddConstProperty("YIELDRATIO", 1.0);
 
     // apply the properties to the slab material
     slabMat->SetMaterialPropertiesTable(mptSlab);
+
+    // set the Birks constant for the scintillator
+    slabMat->GetIonisation()->SetBirksConstant(0.154 * mm / MeV);
 
 
     // construct the material properties table for the world volume
