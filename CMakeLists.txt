@@ -13,9 +13,16 @@ file(GLOB MACRO_FILES
 	"*.mac"
 )
 
+file(GLOB STL_FILES
+	"*.stl"
+)
+
 file(COPY ${MACRO_FILES} DESTINATION ${PROJECT_BINARY_DIR})
+file(COPY ${STL_FILES} DESTINATION ${PROJECT_BINARY_DIR})
 
 add_executable(tof_Detector tof_Detector.cc ${sources} ${headers})
 target_link_libraries(tof_Detector ${Geant4_LIBRARIES})
+
+target_link_libraries(tof_Detector cadmesh)
 
 add_custom_target(tof_detector DEPENDS tof_Detector)

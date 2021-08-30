@@ -11,6 +11,9 @@
 #include "detector.hh"
 #include "G4OpticalSurface.hh"
 #include "G4LogicalBorderSurface.hh"
+#include "CADMesh.hh"
+#include <string>
+#include "G4PhysicalConstants.hh"
 
 class MyDetectorConstruction: public G4VUserDetectorConstruction
 {
@@ -20,8 +23,14 @@ public:
 
     virtual G4VPhysicalVolume *Construct();
 
+    void SetCADFilename(std::string name)
+    {
+        filename = name;
+    };
+
 private:
     G4LogicalVolume *logicDetector;
     virtual void ConstructSDandField();
+    std::string filename;
 };
 #endif

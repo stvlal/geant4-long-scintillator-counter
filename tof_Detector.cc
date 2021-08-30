@@ -14,20 +14,37 @@ int main(int argc, char **argv)
     // construct the default run manager
     G4RunManager *runManager = new G4RunManager();
 
+    MyDetectorConstruction *myDetectorConstruction = new MyDetectorConstruction();
+
+    // detect interactive mode and define UI session
+    G4UIExecutive *ui = 0;
+    if (argc == 1)
+    {
+        G4cout << "Usage: " << G4endl;
+        G4cout << "./tof_Detector run.mac light_guide.stl, or" << G4endl;
+        G4cout << "./tof_Detector light_guide.stl" << G4endl;
+        return 0;
+    }
+    else if (argc == 2)
+    {
+        ui = new G4UIExecutive(argc, argv);
+        myDetectorConstruction->SetCADFilename(argv[1]);
+    }
+
     // set mandatory initialization classes
-    runManager->SetUserInitialization(new MyDetectorConstruction());
+    runManager->SetUserInitialization(myDetectorConstruction);
     runManager->SetUserInitialization(new MyPhysicsList());
     runManager->SetUserInitialization(new MyActionInitialization());
 
     // initialize G4 kernel
     runManager->Initialize();
 
-    // detect interactive mode (if no arguments) and define UI session
-    G4UIExecutive *ui = 0;
-    if (argc == 1)
-    {
-        ui = new G4UIExecutive(argc, argv);
-    }
+
+    // random seeds
+    G4Random::setTheEngine(new CLHEP::RanecuEngine());
+    G4long seed = time(NULL);
+    G4Random::setTheSeed(seed);
+
 
     // construct the visualization manager and initialize it
     G4VisManager *visManager = new G4VisExecutive();
@@ -50,6 +67,7 @@ int main(int argc, char **argv)
     else
     {
         // batch mode
+        myDetectorConstruction->SetCADFilename(argv[2]);
         G4String command = "/control/execute ";
         G4String fileName = argv[1];
 

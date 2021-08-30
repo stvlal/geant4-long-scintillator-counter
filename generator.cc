@@ -2,7 +2,7 @@
 
 MyPrimaryGenerator::MyPrimaryGenerator()
 {
-    // set the number of particles in 1 event
+    // set the number of the initial particles in 1 run
     fParticleGun = new G4ParticleGun(1);            // for e-
     // fParticleGun = new G4ParticleGun(3e6);       // for gamma
 
@@ -23,6 +23,8 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     fParticleGun->SetParticleMomentum(3*GeV);           // for e-
     //fParticleGun->SetParticleMomentum(3.5*eV);        // for gamma
     fParticleGun->SetParticleDefinition(particle);
+
+
 }
 
 MyPrimaryGenerator::~MyPrimaryGenerator()

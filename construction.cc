@@ -2,7 +2,7 @@
 
 MyDetectorConstruction::MyDetectorConstruction()
 {
-
+    filename = "";
 }
 
 MyDetectorConstruction::~MyDetectorConstruction()
@@ -15,12 +15,16 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     // this pointer is used for accessing internal Geant4 database
     G4NistManager *nist = G4NistManager::Instance();
 
+    // compose the slab material
     G4Material *slabMat = new G4Material("slabMat", 1.023*g/cm3, 2);
     slabMat->AddElement(nist->FindOrBuildElement("H"), 10);
     slabMat->AddElement(nist->FindOrBuildElement("C"), 9);
 
     // set air as the world volume material
     G4Material *worldMat = nist->FindOrBuildMaterial("G4_AIR");
+
+    // set plexiglass as the light guide volume material
+    G4Material *Acrylic = nist->FindOrBuildMaterial("G4_PLEXIGLASS");
 
 
     // ------------ Generate & Add Material Properties Table ------------
@@ -115,10 +119,94 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     worldMat->SetMaterialPropertiesTable(mptWorld);
 
 
+    ////////////////////////////////////////
+
+    G4double lambda_min = 200*nm;
+    G4double lambda_max = 700*nm;
+
+    // Refractive index
+
+     const G4int NENTRIES = 11 ;
+     G4double LAMBDA_ACRYLIC[NENTRIES] ;
+
+
+     G4double RINDEX_ACRYLIC[NENTRIES] ;
+     G4double ENERGY_ACRYLIC[NENTRIES] ;
+
+    // Parameterization for refractive index of High Grade PMMA
+
+     G4double bParam[4] = {1760.7010,-1.3687,2.4388e-3,-1.5178e-6} ;
+
+     for(G4int i=0;i<NENTRIES; i++){
+
+       LAMBDA_ACRYLIC[i] = lambda_min + i*(lambda_max-lambda_min)/float(NENTRIES-1) ;
+       RINDEX_ACRYLIC[i] = 0.0 ;
+
+       for (G4int jj=0 ; jj<4 ; jj++)
+       {
+         RINDEX_ACRYLIC[i] +=  (bParam[jj]/1000.0)*std::pow(LAMBDA_ACRYLIC[i]/nm,jj) ;
+       }
+
+       ENERGY_ACRYLIC[i] =   h_Planck*c_light/LAMBDA_ACRYLIC[i] ;  // Convert from wavelength to energy ;
+    //  G4cout << ENERGY_ACRYLIC[i]/eV << " " << LAMBDA_ACRYLIC[i]/nm << " " << RINDEX_ACRYLIC[i] << G4endl ;
+
+     }
+
+     G4MaterialPropertiesTable *MPT_Acrylic = new G4MaterialPropertiesTable();
+     MPT_Acrylic->AddProperty("RINDEX", ENERGY_ACRYLIC, RINDEX_ACRYLIC, NENTRIES);
+
+
+     // Absorption
+     const G4int NENT = 25 ;
+     G4double LAMBDAABS[NENT] =
+     {
+       100.0,
+       246.528671, 260.605103, 263.853516, 266.019104, 268.726105,
+       271.433136, 273.598724, 276.305725, 279.554138, 300.127380,
+       320.159241, 340.191101, 360.764343, 381.337585, 399.745239,
+       421.401276, 440.891724, 460.382172, 480.414001, 500.987274,
+       520.477722, 540.509583, 559.458618,
+       700.0
+     } ;
+
+     G4double ABS[NENT] =   // Transmission (in %) of  3mm thick PMMA
+     {
+       0.0000000,
+       0.0000000,  5.295952,  9.657321, 19.937695, 29.283491,
+       39.252335, 48.598133, 58.255451, 65.109039, 79.439247,
+       85.669785, 89.719627, 91.277260, 91.588783, 91.900307,
+       91.588783, 91.277260, 91.277260, 91.588783, 91.588783,
+       91.900307, 91.900307, 91.588783,
+       91.5
+     } ;
+
+
+     MPT_Acrylic->AddProperty("ABSLENGTH", new G4MaterialPropertyVector()) ;
+     for(G4int i=0;i<NENT; i++){
+       G4double energy    = h_Planck*c_light/(LAMBDAABS[i]*nm) ;
+       G4double abslength ;
+
+       if (ABS[i] <= 0.0) {
+         abslength = 1.0/kInfinity ;
+       }
+       else {
+         abslength = -3.0*mm/(std::log(ABS[i]/100.0)) ;
+       }
+
+       MPT_Acrylic->AddEntry("ABSLENGTH", energy, abslength);
+
+     }
+
+     Acrylic->SetMaterialPropertiesTable(MPT_Acrylic);
+
+
+    ///////////////////////////////////////
+
+
     // ------------- Volumes --------------
 
     // set the sizes of the world volume
-    G4Box *solidWorld = new G4Box("solidWorld", 80*cm, 15*cm, 11.25*cm);
+    G4Box *solidWorld = new G4Box("solidWorld", 120*cm, 20*cm, 16.25*cm);
 
     // create a logical world volume
     G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicWorld");
@@ -137,7 +225,64 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     G4VPhysicalVolume *physSlab = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicSlab, "physSlab", logicWorld, false, 0, true);
 
 
+    // getting the CAD model (some_filename.stl)
+    CADMesh *mesh = new CADMesh((char*) filename.c_str());
+    mesh->SetScale(mm);
+    mesh->SetReverse(false);
+
+    // CAD model 1 rotation
+    G4RotationMatrix *rot1 = new G4RotationMatrix();
+    rot1->rotateZ(90*deg);
+
+    // CAD model 2 rotation
+    G4RotationMatrix *rot2 = new G4RotationMatrix();
+    rot2->rotateZ(-90*deg);
+
+    // creating the first light guide
+    G4VSolid *solidLG_1 = mesh->TessellatedMesh();
+    G4LogicalVolume *logicLG_1 = new G4LogicalVolume(solidLG_1, Acrylic, "logicLG_1", 0, 0, 0);
+    G4VPhysicalVolume *physLG_1 = new G4PVPlacement(rot1, G4ThreeVector(-70*cm, 0.,0.), logicLG_1, "physLG_1", logicWorld, false, 0, true);
+
+    // creating the second light guide
+    G4VSolid *solidLG_2 = mesh->TessellatedMesh();
+    G4LogicalVolume *logicLG_2 = new G4LogicalVolume(solidLG_2, Acrylic, "logicLG_2", 0, 0, 0);
+    G4VPhysicalVolume *physLG_2 = new G4PVPlacement(rot2, G4ThreeVector(70*cm, 0.,0.), logicLG_2, "physLG_2", logicWorld, false, 0, true);
+
+
     // ------------- Surfaces --------------
+
+    ///////////////////////////////////
+
+    // construct optical slab surface
+   G4OpticalSurface *opLGSurface = new G4OpticalSurface("opLGSurface");
+   opLGSurface->SetType(dielectric_dielectric);       // set the type of interface
+   opLGSurface->SetFinish(ground);                    // set the surface finish
+   opLGSurface->SetModel(glisur);                     // set the simulation model used by the boundary process
+
+   // create a logical border surface
+   G4LogicalBorderSurface *lgSurface = new G4LogicalBorderSurface("lgSurface", physLG_1, physWorld, opLGSurface);
+
+
+   // Generate & Add Material Properties Table attached to the optical surfaces
+
+   // optical photon energies
+   std::vector<G4double> ephoton = { 2.034 * eV, 4.136 * eV };
+
+   // optical slab surface properties
+   std::vector<G4double> reflectivity = { 0.3, 0.5 };   // how to get this parameter for EJ-200
+   std::vector<G4double> efficiency   = { 0.8, 1.0 };   // how to get this parameter for EJ-200
+
+   // construct the material properties table for the optical surface
+   G4MaterialPropertiesTable *mptLGSurface = new G4MaterialPropertiesTable();
+
+   // add some properties to the optical surface
+   mptLGSurface->AddProperty("REFLECTIVITY", ephoton, reflectivity);
+   mptLGSurface->AddProperty("EFFICIENCY", ephoton, efficiency);
+
+   // apply the properties to the optical surface
+   opLGSurface->SetMaterialPropertiesTable(mptLGSurface);
+
+    /////////////////////////////////
 
     // construct optical slab surface
     G4OpticalSurface *opSlabSurface = new G4OpticalSurface("opSlabSurface");
@@ -150,14 +295,14 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 
     // Generate & Add Material Properties Table attached to the optical surfaces
-
+/*
     // optical photon energies
     std::vector<G4double> ephoton = { 2.034 * eV, 4.136 * eV };
 
     // optical slab surface properties
     std::vector<G4double> reflectivity = { 0.3, 0.5 };   // how to get this parameter for EJ-200
     std::vector<G4double> efficiency   = { 0.8, 1.0 };   // how to get this parameter for EJ-200
-
+*/
     // construct the material properties table for the optical surface
     G4MaterialPropertiesTable *mptSlabSurface = new G4MaterialPropertiesTable();
 
@@ -173,7 +318,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     // hereafter counter = a sensitive detector at the end of the slab (something like PMT)
 
     // set the sizes of the counter volume
-    G4Box *solidDetector = new G4Box("solidDetector", 0.5*cm, 5*cm, 1.25*cm);
+    G4Box *solidDetector = new G4Box("solidDetector", 0.5*cm, 2.5*cm, 2.5*cm);
 
     // create a logical counter volume
     logicDetector = new G4LogicalVolume(solidDetector, worldMat, "logicDetector");
@@ -181,7 +326,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     // create a physical counters volumes; one of them has index '0', another one has index '1'
     for (G4int i = 0; i < 2; i++)
     {
-        G4VPhysicalVolume *physDetector = new G4PVPlacement(0, G4ThreeVector(70.6*cm - 2*i*70.6*cm, 0., 0.), logicDetector, "physDetector", logicWorld, false, i, true);
+        G4VPhysicalVolume *physDetector = new G4PVPlacement(0, G4ThreeVector(88.6*cm - 2*i*88.6*cm, 0., 0.), logicDetector, "physDetector", logicWorld, false, i, true);
     }
 
     return physWorld;
