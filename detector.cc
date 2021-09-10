@@ -16,12 +16,12 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
     G4Track *track = aStep->GetTrack();
 
     // make the particles not go through the counters
-    track->SetTrackStatus(fStopAndKill);
+    //track->SetTrackStatus(fStopAndKill);
 
     // the pointer for accessing the particle detector touch
     const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
 
-    // counterNo is 0 or 1 depending on what counter worked
+    // counterNo is 0, 1, 2 or 3 depending on what counter worked
     G4int counterNo = touchable->GetCopyNumber();
 
     // get event ID for event counting

@@ -24,10 +24,12 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     G4Material *worldMat = nist->FindOrBuildMaterial("G4_AIR");
 
     // set plexiglass as the light guide volume material
-    G4Material *Acrylic = nist->FindOrBuildMaterial("G4_PLEXIGLASS");
+    G4Material *lgMat = nist->FindOrBuildMaterial("G4_PLEXIGLASS");
 
 
     // ------------ Generate & Add Material Properties Table ------------
+
+    //////// slab material ////////
 
     // wavelength obtained from the graph
     std::vector<G4double> wavelength = {
@@ -102,6 +104,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     slabMat->GetIonisation()->SetBirksConstant(0.154 * mm / MeV);
 
 
+    //////// world material ////////
+
     // construct the material properties table for the world volume
     G4MaterialPropertiesTable *mptWorld = new G4MaterialPropertiesTable();
 
@@ -119,88 +123,31 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     worldMat->SetMaterialPropertiesTable(mptWorld);
 
 
-    ////////////////////////////////////////
+    //////// light guide material ////////
 
-    G4double lambda_min = 200*nm;
-    G4double lambda_max = 700*nm;
+    // construct the material properties table for the light guide volume
+    G4MaterialPropertiesTable *mptLG = new G4MaterialPropertiesTable();
 
-    // Refractive index
+    // plexiglass refractive index
+    std::vector<G4double> rindexLG;
+    for (G4int i = 0; i < wavelength.size(); ++i)
+    {
+        rindexLG.push_back(1.49);
+    }
 
-     const G4int NENTRIES = 11 ;
-     G4double LAMBDA_ACRYLIC[NENTRIES] ;
+    // the absorption length for the light guide material
+    std::vector<G4double> absorptionLG;
+    for (G4int i = 0; i < wavelength.size(); ++i)
+    {
+        absorptionLG.push_back(380 * cm);
+    }
 
+    // add some properties to the light guide material
+    mptLG->AddProperty("RINDEX", photonEnergy, rindexLG);
+    mptLG->AddProperty("ABSLENGTH", photonEnergy, absorptionLG);
 
-     G4double RINDEX_ACRYLIC[NENTRIES] ;
-     G4double ENERGY_ACRYLIC[NENTRIES] ;
-
-    // Parameterization for refractive index of High Grade PMMA
-
-     G4double bParam[4] = {1760.7010,-1.3687,2.4388e-3,-1.5178e-6} ;
-
-     for(G4int i=0;i<NENTRIES; i++){
-
-       LAMBDA_ACRYLIC[i] = lambda_min + i*(lambda_max-lambda_min)/float(NENTRIES-1) ;
-       RINDEX_ACRYLIC[i] = 0.0 ;
-
-       for (G4int jj=0 ; jj<4 ; jj++)
-       {
-         RINDEX_ACRYLIC[i] +=  (bParam[jj]/1000.0)*std::pow(LAMBDA_ACRYLIC[i]/nm,jj) ;
-       }
-
-       ENERGY_ACRYLIC[i] =   h_Planck*c_light/LAMBDA_ACRYLIC[i] ;  // Convert from wavelength to energy ;
-    //  G4cout << ENERGY_ACRYLIC[i]/eV << " " << LAMBDA_ACRYLIC[i]/nm << " " << RINDEX_ACRYLIC[i] << G4endl ;
-
-     }
-
-     G4MaterialPropertiesTable *MPT_Acrylic = new G4MaterialPropertiesTable();
-     MPT_Acrylic->AddProperty("RINDEX", ENERGY_ACRYLIC, RINDEX_ACRYLIC, NENTRIES);
-
-
-     // Absorption
-     const G4int NENT = 25 ;
-     G4double LAMBDAABS[NENT] =
-     {
-       100.0,
-       246.528671, 260.605103, 263.853516, 266.019104, 268.726105,
-       271.433136, 273.598724, 276.305725, 279.554138, 300.127380,
-       320.159241, 340.191101, 360.764343, 381.337585, 399.745239,
-       421.401276, 440.891724, 460.382172, 480.414001, 500.987274,
-       520.477722, 540.509583, 559.458618,
-       700.0
-     } ;
-
-     G4double ABS[NENT] =   // Transmission (in %) of  3mm thick PMMA
-     {
-       0.0000000,
-       0.0000000,  5.295952,  9.657321, 19.937695, 29.283491,
-       39.252335, 48.598133, 58.255451, 65.109039, 79.439247,
-       85.669785, 89.719627, 91.277260, 91.588783, 91.900307,
-       91.588783, 91.277260, 91.277260, 91.588783, 91.588783,
-       91.900307, 91.900307, 91.588783,
-       91.5
-     } ;
-
-
-     MPT_Acrylic->AddProperty("ABSLENGTH", new G4MaterialPropertyVector()) ;
-     for(G4int i=0;i<NENT; i++){
-       G4double energy    = h_Planck*c_light/(LAMBDAABS[i]*nm) ;
-       G4double abslength ;
-
-       if (ABS[i] <= 0.0) {
-         abslength = 1.0/kInfinity ;
-       }
-       else {
-         abslength = -3.0*mm/(std::log(ABS[i]/100.0)) ;
-       }
-
-       MPT_Acrylic->AddEntry("ABSLENGTH", energy, abslength);
-
-     }
-
-     Acrylic->SetMaterialPropertiesTable(MPT_Acrylic);
-
-
-    ///////////////////////////////////////
+    // apply the properties to the light guide material (plexiglass)
+    lgMat->SetMaterialPropertiesTable(mptLG);
 
 
     // ------------- Volumes --------------
@@ -216,7 +163,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 
     // set the sizes of the slab volume
-    G4Box *solidSlab = new G4Box("slab", 70*cm, 5*cm, 1.25*cm);
+    G4Box *solidSlab = new G4Box("slab", 69.9*cm, 5*cm, 1.25*cm);
 
     // create a logical slab volume
     G4LogicalVolume *logicSlab = new G4LogicalVolume(solidSlab, slabMat, "logicSlab");
@@ -240,49 +187,18 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
     // creating the first light guide
     G4VSolid *solidLG_1 = mesh->TessellatedMesh();
-    G4LogicalVolume *logicLG_1 = new G4LogicalVolume(solidLG_1, Acrylic, "logicLG_1", 0, 0, 0);
+    G4LogicalVolume *logicLG_1 = new G4LogicalVolume(solidLG_1, lgMat, "logicLG_1", 0, 0, 0);
     G4VPhysicalVolume *physLG_1 = new G4PVPlacement(rot1, G4ThreeVector(-70*cm, 0.,0.), logicLG_1, "physLG_1", logicWorld, false, 0, true);
 
     // creating the second light guide
     G4VSolid *solidLG_2 = mesh->TessellatedMesh();
-    G4LogicalVolume *logicLG_2 = new G4LogicalVolume(solidLG_2, Acrylic, "logicLG_2", 0, 0, 0);
+    G4LogicalVolume *logicLG_2 = new G4LogicalVolume(solidLG_2, lgMat, "logicLG_2", 0, 0, 0);
     G4VPhysicalVolume *physLG_2 = new G4PVPlacement(rot2, G4ThreeVector(70*cm, 0.,0.), logicLG_2, "physLG_2", logicWorld, false, 0, true);
 
 
     // ------------- Surfaces --------------
 
-    ///////////////////////////////////
-
-    // construct optical slab surface
-   G4OpticalSurface *opLGSurface = new G4OpticalSurface("opLGSurface");
-   opLGSurface->SetType(dielectric_dielectric);       // set the type of interface
-   opLGSurface->SetFinish(ground);                    // set the surface finish
-   opLGSurface->SetModel(glisur);                     // set the simulation model used by the boundary process
-
-   // create a logical border surface
-   G4LogicalBorderSurface *lgSurface = new G4LogicalBorderSurface("lgSurface", physLG_1, physWorld, opLGSurface);
-
-
-   // Generate & Add Material Properties Table attached to the optical surfaces
-
-   // optical photon energies
-   std::vector<G4double> ephoton = { 2.034 * eV, 4.136 * eV };
-
-   // optical slab surface properties
-   std::vector<G4double> reflectivity = { 0.3, 0.5 };   // how to get this parameter for EJ-200
-   std::vector<G4double> efficiency   = { 0.8, 1.0 };   // how to get this parameter for EJ-200
-
-   // construct the material properties table for the optical surface
-   G4MaterialPropertiesTable *mptLGSurface = new G4MaterialPropertiesTable();
-
-   // add some properties to the optical surface
-   mptLGSurface->AddProperty("REFLECTIVITY", ephoton, reflectivity);
-   mptLGSurface->AddProperty("EFFICIENCY", ephoton, efficiency);
-
-   // apply the properties to the optical surface
-   opLGSurface->SetMaterialPropertiesTable(mptLGSurface);
-
-    /////////////////////////////////
+    //////// slab surface ////////
 
     // construct optical slab surface
     G4OpticalSurface *opSlabSurface = new G4OpticalSurface("opSlabSurface");
@@ -294,15 +210,30 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     G4LogicalBorderSurface *slabSurface = new G4LogicalBorderSurface("slabSurface", physSlab, physWorld, opSlabSurface);
 
 
-    // Generate & Add Material Properties Table attached to the optical surfaces
+    //////// light guide surface ////////
 /*
+    // construct optical light guide surface
+    G4OpticalSurface *opLgSurface = new G4OpticalSurface("opLgSurface");
+    opLgSurface->SetType(dielectric_dielectric);       // set the type of interface
+    opLgSurface->SetFinish(ground);                    // set the surface finish
+    opLgSurface->SetModel(glisur);                     // set the simulation model used by the boundary process
+
+    // create a logical border surface
+    G4LogicalBorderSurface *lgSurface_1 = new G4LogicalBorderSurface("lgSurface_1", physLG_1, physWorld, opLgSurface);
+    G4LogicalBorderSurface *lgSurface_2 = new G4LogicalBorderSurface("lgSurface_2", physLG_2, physWorld, opLgSurface);
+*/
+
+    // Generate & Add Material Properties Table attached to the optical surfaces
+
+    //////// slab surface ////////
+
     // optical photon energies
     std::vector<G4double> ephoton = { 2.034 * eV, 4.136 * eV };
 
     // optical slab surface properties
     std::vector<G4double> reflectivity = { 0.3, 0.5 };   // how to get this parameter for EJ-200
     std::vector<G4double> efficiency   = { 0.8, 1.0 };   // how to get this parameter for EJ-200
-*/
+
     // construct the material properties table for the optical surface
     G4MaterialPropertiesTable *mptSlabSurface = new G4MaterialPropertiesTable();
 
@@ -314,11 +245,28 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     opSlabSurface->SetMaterialPropertiesTable(mptSlabSurface);
 
 
-    // ------------- Counters at the ends of the slab --------------
-    // hereafter counter = a sensitive detector at the end of the slab (something like PMT)
+    //////// light guide surface ////////
+/*
+    // optical light guide surface properties
+    std::vector<G4double> reflectivityLG = { 0.3, 0.5 };   // how to get this parameter for plexiglass
+    std::vector<G4double> efficiencyLG   = { 0.8, 1.0 };   // how to get this parameter for plexiglass
+
+    // construct the material properties table for the optical surface
+    G4MaterialPropertiesTable *mptLgSurface = new G4MaterialPropertiesTable();
+
+    // add some properties to the optical surface
+    mptLgSurface->AddProperty("REFLECTIVITY", ephoton, reflectivityLG);
+    mptLgSurface->AddProperty("EFFICIENCY", ephoton, efficiencyLG);
+
+    // apply the properties to the optical surface
+    opLgSurface->SetMaterialPropertiesTable(mptLgSurface);
+*/
+
+    // ------------- Counters at the ends of the light guides --------------
+    // hereafter counter = a sensitive detector at the end of the light guides (something like PMT)
 
     // set the sizes of the counter volume
-    G4Box *solidDetector = new G4Box("solidDetector", 0.5*cm, 2.5*cm, 2.5*cm);
+    G4Box *solidDetector = new G4Box("solidDetector", 0.5*mm, 2.3*cm, 2.3*cm);
 
     // create a logical counter volume
     logicDetector = new G4LogicalVolume(solidDetector, worldMat, "logicDetector");
@@ -326,7 +274,22 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     // create a physical counters volumes; one of them has index '0', another one has index '1'
     for (G4int i = 0; i < 2; i++)
     {
-        G4VPhysicalVolume *physDetector = new G4PVPlacement(0, G4ThreeVector(88.6*cm - 2*i*88.6*cm, 0., 0.), logicDetector, "physDetector", logicWorld, false, i, true);
+        G4VPhysicalVolume *physDetector = new G4PVPlacement(0, G4ThreeVector(88.05*cm - 2*i*88.05*cm, 0., 0.), logicDetector, "physDetector", logicWorld, false, i, true);
+    }
+
+
+    // ------------- Counters at the ends of the slab --------------
+
+    // set the sizes of the counter volume
+    G4Box *solidInnerDetector = new G4Box("solidInnerDetector", 0.5*mm, 5*cm, 1.25*cm);
+
+    // create a logical counter volume
+    logicInnerDetector = new G4LogicalVolume(solidInnerDetector, slabMat, "logicInnerDetector");
+
+    // create a physical counters volumes; one of them has index '2', another one has index '3'
+    for (G4int i = 0; i < 2; i++)
+    {
+        G4VPhysicalVolume *physInnerDetector = new G4PVPlacement(0, G4ThreeVector(69.95*cm - 2*i*69.95*cm, 0., 0.), logicInnerDetector, "physInnerDetector", logicWorld, false, i+2, true);
     }
 
     return physWorld;
@@ -338,4 +301,8 @@ void MyDetectorConstruction::ConstructSDandField()
     MySensitiveDetector *sensDet = new MySensitiveDetector("sensitiveDetector");
 
     logicDetector->SetSensitiveDetector(sensDet);
+
+    MySensitiveDetector *sensInnerDet = new MySensitiveDetector("sensitiveInnerDetector");
+
+    logicInnerDetector->SetSensitiveDetector(sensInnerDet);
 }
