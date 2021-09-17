@@ -26,6 +26,10 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     // set plexiglass as the light guide volume material
     G4Material *lgMat = nist->FindOrBuildMaterial("G4_PLEXIGLASS");
 
+    // compose the wrapping material
+    G4Material *wrapMat = new G4Material("wrapMat", 2.7*g/cm3, 1);
+    wrapMat->AddElement(nist->FindOrBuildElement("Al"), 1);
+
 
     // ------------ Generate & Add Material Properties Table ------------
 
@@ -150,6 +154,25 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     lgMat->SetMaterialPropertiesTable(mptLG);
 
 
+    //////// wrapping material ////////
+
+    // construct the material properties table for the wrapping volume
+    G4MaterialPropertiesTable *mptWrap = new G4MaterialPropertiesTable();
+
+    // aluminum refractive index
+    std::vector<G4double> rindexWrap;
+    for (G4int i = 0; i < wavelength.size(); ++i)
+    {
+        rindexWrap.push_back(1.37);
+    }
+
+    // add some properties to the wrapping material
+    mptWrap->AddProperty("RINDEX", photonEnergy, rindexWrap);
+
+    // apply the properties to the wrapping material
+    wrapMat->SetMaterialPropertiesTable(mptWrap);
+
+
     // ------------- Volumes --------------
 
     // set the sizes of the world volume
@@ -196,6 +219,24 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     G4VPhysicalVolume *physLG_2 = new G4PVPlacement(rot2, G4ThreeVector(70*cm, 0.,0.), logicLG_2, "physLG_2", logicWorld, false, 0, true);
 
 
+    // wrapping volumes
+
+    G4Box *solidWrap1 = new G4Box("wrap1", 70*cm, 5*cm, 0.5*mm);
+    G4LogicalVolume *logicWrap1 = new G4LogicalVolume(solidWrap1, wrapMat, "logicWrap1");
+    G4VPhysicalVolume *physWrap1 = new G4PVPlacement(0, G4ThreeVector(0.,0.,1.25*cm), logicWrap1, "physWrap1", logicWorld, false, 0, true);
+
+    G4Box *solidWrap2 = new G4Box("wrap2", 70*cm, 0.5*mm, 1.35*cm);
+    G4LogicalVolume *logicWrap2 = new G4LogicalVolume(solidWrap2, wrapMat, "logicWrap2");
+    G4VPhysicalVolume *physWrap2 = new G4PVPlacement(0, G4ThreeVector(0.,5*cm,0.), logicWrap2, "physWrap2", logicWorld, false, 0, true);
+
+    G4Box *solidWrap3 = new G4Box("wrap3", 70*cm, 5*cm, 0.5*mm);
+    G4LogicalVolume *logicWrap3 = new G4LogicalVolume(solidWrap3, wrapMat, "logicWrap3");
+    G4VPhysicalVolume *physWrap3 = new G4PVPlacement(0, G4ThreeVector(0.,0.,-1.25*cm), logicWrap3, "physWrap3", logicWorld, false, 0, true);
+
+    G4Box *solidWrap4 = new G4Box("wrap4", 70*cm, 0.5*mm, 1.35*cm);
+    G4LogicalVolume *logicWrap4 = new G4LogicalVolume(solidWrap4, wrapMat, "logicWrap4");
+    G4VPhysicalVolume *physWrap4 = new G4PVPlacement(0, G4ThreeVector(0.,-5*cm,0.), logicWrap4, "physWrap4", logicWorld, false, 0, true);
+
     // ------------- Surfaces --------------
 
     //////// slab surface ////////
@@ -203,7 +244,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     // construct optical slab surface
     G4OpticalSurface *opSlabSurface = new G4OpticalSurface("opSlabSurface");
     opSlabSurface->SetType(dielectric_dielectric);       // set the type of interface
-    opSlabSurface->SetFinish(ground);                    // set the surface finish
+    opSlabSurface->SetFinish(polished);                  // set the surface finish
     opSlabSurface->SetModel(glisur);                     // set the simulation model used by the boundary process
 
     // create a logical border surface
@@ -211,17 +252,17 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 
     //////// light guide surface ////////
-/*
+
     // construct optical light guide surface
     G4OpticalSurface *opLgSurface = new G4OpticalSurface("opLgSurface");
     opLgSurface->SetType(dielectric_dielectric);       // set the type of interface
-    opLgSurface->SetFinish(ground);                    // set the surface finish
+    opLgSurface->SetFinish(polished);                  // set the surface finish
     opLgSurface->SetModel(glisur);                     // set the simulation model used by the boundary process
 
     // create a logical border surface
     G4LogicalBorderSurface *lgSurface_1 = new G4LogicalBorderSurface("lgSurface_1", physLG_1, physWorld, opLgSurface);
     G4LogicalBorderSurface *lgSurface_2 = new G4LogicalBorderSurface("lgSurface_2", physLG_2, physWorld, opLgSurface);
-*/
+
 
     // Generate & Add Material Properties Table attached to the optical surfaces
 
@@ -246,7 +287,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 
     //////// light guide surface ////////
-/*
+
     // optical light guide surface properties
     std::vector<G4double> reflectivityLG = { 0.3, 0.5 };   // how to get this parameter for plexiglass
     std::vector<G4double> efficiencyLG   = { 0.8, 1.0 };   // how to get this parameter for plexiglass
@@ -260,7 +301,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
     // apply the properties to the optical surface
     opLgSurface->SetMaterialPropertiesTable(mptLgSurface);
-*/
+
 
     // ------------- Counters at the ends of the light guides --------------
     // hereafter counter = a sensitive detector at the end of the light guides (something like PMT)

@@ -27,7 +27,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhis
     // get event ID for event counting
     G4int event = G4RunManager::GetRunManager()->GetCurrentEvent()->GetEventID();
 
-    // construct analysis manager and fill ROOT tree with event and the number of times when counters register particles
+    // construct analysis manager and fill out the ROOT tree with event and the number of times when counters register particles
     G4AnalysisManager *man = G4AnalysisManager::Instance();
     man->FillNtupleIColumn(0, event);
     man->FillNtupleDColumn(1, counterNo);

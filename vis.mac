@@ -4,3 +4,34 @@
 /vis/drawVolume
 /vis/viewer/set/autoRefresh true
 /vis/scene/add/trajectories smooth
+/vis/scene/add/axes
+#
+########################################
+#
+/score/create/boxMesh slab_end1
+#
+/score/mesh/boxSize 0.5 5.0 1.25 cm
+/score/mesh/translate/xyz 68. 0. 0. cm
+/score/mesh/nBin 5 1 1
+#
+/score/quantity/flatSurfaceCurrent flatCurrent1
+/score/colorMap/setMinMax ! 0. 800.
+/score/dumpQuantityToFile slab_end1 flatCurrent1 fl1Current.txt
+/score/close
+########################################
+#
+/score/create/boxMesh slab_end2
+#
+/score/mesh/boxSize 0.5 5.0 1.25 cm
+/score/mesh/translate/xyz -68. 0. 0. cm
+/score/mesh/nBin 5 1 1
+#
+/score/quantity/flatSurfaceCurrent flatCurrent2
+/score/colorMap/setMinMax ! 0. 800.
+/score/dumpQuantityToFile slab_end2 flatCurrent2 fl2Current.txt
+/score/close
+########################################
+/score/list
+/score/drawProjection slab_end1 flatCurrent1
+/score/drawProjection slab_end2 flatCurrent2
+########################################

@@ -7,12 +7,17 @@
 #include "construction.hh"
 #include "physics.hh"
 #include "action.hh"
+#include "G4ScoringManager.hh"
 
 
 int main(int argc, char **argv)
 {
     // construct the default run manager
     G4RunManager *runManager = new G4RunManager();
+
+    // Activate UI-command base scorer
+    G4ScoringManager * scManager = G4ScoringManager::GetScoringManager();
+    scManager->SetVerboseLevel(1);
 
     MyDetectorConstruction *myDetectorConstruction = new MyDetectorConstruction();
 

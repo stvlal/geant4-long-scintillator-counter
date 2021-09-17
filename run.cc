@@ -15,7 +15,6 @@ MyRunAction::MyRunAction()
                                                 // right counter (but '1' appears); afterwards 0+0+0+..+0 = n*0, where n is the
                                                 // number of photons registered by the left counter (1+1+1+..+1 = m*1 for the right
                                                 // one). See .root-file for clarification.
-
     man->FinishNtuple(0);
 }
 
