@@ -30,7 +30,7 @@ public:
 
 private:
     G4LogicalVolume *logicDetector;
-    G4LogicalVolume *logicInnerDetector;
+    //G4LogicalVolume *logicInnerDetector;
     virtual void ConstructSDandField();
     std::string filename;
 };

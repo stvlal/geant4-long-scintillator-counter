@@ -16,7 +16,7 @@ int main(int argc, char **argv)
     G4RunManager *runManager = new G4RunManager();
 
     // Activate UI-command base scorer
-    G4ScoringManager * scManager = G4ScoringManager::GetScoringManager();
+    G4ScoringManager *scManager = G4ScoringManager::GetScoringManager();
     scManager->SetVerboseLevel(1);
 
     MyDetectorConstruction *myDetectorConstruction = new MyDetectorConstruction();
@@ -64,6 +64,7 @@ int main(int argc, char **argv)
         // the commands in the vis.mac file in the . folder can be used to visualize the detector geometry and particle tracks
         // apply the commands written in the vis.mac file
         UImanager->ApplyCommand("/control/execute vis.mac");
+        UImanager->ApplyCommand("/control/execute scoring.mac");
 
         // start User Interface session
         ui->SessionStart();
