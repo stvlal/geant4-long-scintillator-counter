@@ -5,7 +5,7 @@
 /score/mesh/translate/xyz -69.999999999 0. 0. cm
 /score/mesh/nBin 1 1 1
 #
-/score/quantity/passageCellFlux flatCurrent1
+/score/quantity/population flatCurrent1
 /score/colorMap/setMinMax ! 0. 800.
 /score/close
 ########################################
@@ -16,7 +16,7 @@
 /score/mesh/translate/xyz 69.999999999 0. 0. cm
 /score/mesh/nBin 1 1 1
 #
-/score/quantity/passageCellFlux flatCurrent2
+/score/quantity/population flatCurrent2
 /score/colorMap/setMinMax ! 0. 800.
 /score/close
 ########################################
@@ -30,7 +30,7 @@
 /score/mesh/translate/xyz -87.999999999 0. 0. cm
 /score/mesh/nBin 1 1 1
 #
-/score/quantity/passageCellFlux flatLgCurrent1
+/score/quantity/population flatLgCurrent1
 /score/colorMap/setMinMax ! 0. 800.
 /score/close
 ########################################
@@ -41,7 +41,7 @@
 /score/mesh/translate/xyz 87.999999999 0. 0. cm
 /score/mesh/nBin 1 1 1
 #
-/score/quantity/passageCellFlux flatLgCurrent2
+/score/quantity/population flatLgCurrent2
 /score/colorMap/setMinMax ! 0. 800.
 /score/close
 #######################################

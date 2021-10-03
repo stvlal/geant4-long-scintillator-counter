@@ -43,7 +43,7 @@ void MyRunAction::BeginOfRunAction(const G4Run* run)
     std::stringstream strRunID;
     strRunID << runID;
 
-    // open output file; it will be recreated every time the program run
+    // open output file; it will be recreated every time the program runs
     man->OpenFile("output_" + strRunID.str() + "_.root");
 }
 

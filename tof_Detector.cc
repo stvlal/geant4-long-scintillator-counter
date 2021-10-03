@@ -8,7 +8,7 @@
 #include "physics.hh"
 #include "action.hh"
 #include "G4ScoringManager.hh"
-
+#include "countParticles.hh"
 
 int main(int argc, char **argv)
 {
@@ -65,6 +65,8 @@ int main(int argc, char **argv)
         // apply the commands written in the vis.mac file
         UImanager->ApplyCommand("/control/execute vis.mac");
         UImanager->ApplyCommand("/control/execute scoring.mac");
+
+        countParticles();
 
         // start User Interface session
         ui->SessionStart();

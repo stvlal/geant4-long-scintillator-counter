@@ -1,3 +1,4 @@
+#/vis/open HepRepFile
 /vis/open OGL
 /vis/viewer/set/viewpointVector 0.22 0.2 0.5
 /vis/viewer/zoom 2.6
@@ -5,3 +6,4 @@
 /vis/viewer/set/autoRefresh true
 /vis/scene/add/trajectories smooth
 /vis/scene/add/axes
+/tracking/storeTrajectory 1

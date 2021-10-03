@@ -195,9 +195,9 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
     // construct slab - air optical surface
     G4OpticalSurface *opSlabAirSurface = new G4OpticalSurface("opSlabAirSurface");
-    opSlabAirSurface->SetType(dielectric_LUT);                    // set the type of interface
-    opSlabAirSurface->SetModel(LUT);                              // set the simulation model used by the boundary process
-    opSlabAirSurface->SetFinish(polishedair);                     // set the surface finish
+    opSlabAirSurface->SetType(dielectric_dielectric);                    // set the type of interface
+    opSlabAirSurface->SetModel(glisur);                              // set the simulation model used by the boundary process
+    opSlabAirSurface->SetFinish(polished);                     // set the surface finish
 
 
     // create a logical border surface
