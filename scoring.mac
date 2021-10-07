@@ -24,26 +24,165 @@
 #
 #
 ########################################
-/score/create/cylinderMesh lg_end1
-#
-/score/mesh/cylinderSize 2.3 0.000000001 cm
-/score/mesh/translate/xyz -87.999999999 0. 0. cm
-/score/mesh/nBin 1 1 1
-#
-/score/quantity/population flatLgCurrent1
-/score/colorMap/setMinMax ! 0. 800.
-/score/close
+#/score/create/cylinderMesh lg_end1
+##
+#/score/mesh/cylinderSize 2.3 0.000000001 cm
+#/score/mesh/translate/xyz -87.999999999 0. 0. cm
+#/score/mesh/nBin 1 1 1
+##
+#/score/quantity/population flatLgCurrent1
+#/score/colorMap/setMinMax ! 0. 800.
+#/score/close
 ########################################
 #
-/score/create/cylinderMesh lg_end2
+#/score/create/cylinderMesh lg_end2
+##
+#/score/mesh/cylinderSize 2.3 0.000000001 cm
+#/score/mesh/translate/xyz 87.999999999 0. 0. cm
+#/score/mesh/nBin 1 1 1
+##
+#/score/quantity/population flatLgCurrent2
+#/score/colorMap/setMinMax ! 0. 800.
+#/score/close
+#######################################
 #
-/score/mesh/cylinderSize 2.3 0.000000001 cm
-/score/mesh/translate/xyz 87.999999999 0. 0. cm
+#
+#
+#######################################
+####### SCORERS ALONG THE SLAB ########
+#######################################
+# BEGIN
+/score/create/boxMesh -60_cm
+#
+/score/mesh/boxSize 0.000000001 5.0 1.25 cm
+/score/mesh/translate/xyz -59.999999999 0. 0. cm
 /score/mesh/nBin 1 1 1
 #
-/score/quantity/population flatLgCurrent2
+/score/quantity/population popul_at_-60_cm
 /score/colorMap/setMinMax ! 0. 800.
 /score/close
+#
+# BEGIN
+/score/create/boxMesh -50_cm
+#
+/score/mesh/boxSize 0.000000001 5.0 1.25 cm
+/score/mesh/translate/xyz -49.999999999 0. 0. cm
+/score/mesh/nBin 1 1 1
+#
+/score/quantity/population popul_at_-50_cm
+/score/colorMap/setMinMax ! 0. 800.
+/score/close
+#
+# BEGIN
+/score/create/boxMesh -40_cm
+#
+/score/mesh/boxSize 0.000000001 5.0 1.25 cm
+/score/mesh/translate/xyz -39.999999999 0. 0. cm
+/score/mesh/nBin 1 1 1
+#
+/score/quantity/population popul_at_-40_cm
+/score/colorMap/setMinMax ! 0. 800.
+/score/close
+#
+# BEGIN
+/score/create/boxMesh -30_cm
+#
+/score/mesh/boxSize 0.000000001 5.0 1.25 cm
+/score/mesh/translate/xyz -29.999999999 0. 0. cm
+/score/mesh/nBin 1 1 1
+#
+/score/quantity/population popul_at_-30_cm
+/score/colorMap/setMinMax ! 0. 800.
+/score/close
+#
+# BEGIN
+/score/create/boxMesh -20_cm
+#
+/score/mesh/boxSize 0.000000001 5.0 1.25 cm
+/score/mesh/translate/xyz -19.999999999 0. 0. cm
+/score/mesh/nBin 1 1 1
+#
+/score/quantity/population popul_at_-20_cm
+/score/colorMap/setMinMax ! 0. 800.
+/score/close
+#
+# BEGIN
+/score/create/boxMesh -10_cm
+#
+/score/mesh/boxSize 0.000000001 5.0 1.25 cm
+/score/mesh/translate/xyz -9.999999999 0. 0. cm
+/score/mesh/nBin 1 1 1
+#
+/score/quantity/population popul_at_-10_cm
+/score/colorMap/setMinMax ! 0. 800.
+/score/close
+#
+# BEGIN
+/score/create/boxMesh 10_cm
+#
+/score/mesh/boxSize 0.000000001 5.0 1.25 cm
+/score/mesh/translate/xyz 9.999999999 0. 0. cm
+/score/mesh/nBin 1 1 1
+#
+/score/quantity/population popul_at_10_cm
+/score/colorMap/setMinMax ! 0. 800.
+/score/close
+#
+# BEGIN
+/score/create/boxMesh 20_cm
+#
+/score/mesh/boxSize 0.000000001 5.0 1.25 cm
+/score/mesh/translate/xyz 19.999999999 0. 0. cm
+/score/mesh/nBin 1 1 1
+#
+/score/quantity/population popul_at_20_cm
+/score/colorMap/setMinMax ! 0. 800.
+/score/close
+#
+# BEGIN
+/score/create/boxMesh 30_cm
+#
+/score/mesh/boxSize 0.000000001 5.0 1.25 cm
+/score/mesh/translate/xyz 29.999999999 0. 0. cm
+/score/mesh/nBin 1 1 1
+#
+/score/quantity/population popul_at_30_cm
+/score/colorMap/setMinMax ! 0. 800.
+/score/close
+#
+# BEGIN
+/score/create/boxMesh 40_cm
+#
+/score/mesh/boxSize 0.000000001 5.0 1.25 cm
+/score/mesh/translate/xyz 39.999999999 0. 0. cm
+/score/mesh/nBin 1 1 1
+#
+/score/quantity/population popul_at_40_cm
+/score/colorMap/setMinMax ! 0. 800.
+/score/close
+#
+# BEGIN
+/score/create/boxMesh 50_cm
+#
+/score/mesh/boxSize 0.000000001 5.0 1.25 cm
+/score/mesh/translate/xyz 49.999999999 0. 0. cm
+/score/mesh/nBin 1 1 1
+#
+/score/quantity/population popul_at_50_cm
+/score/colorMap/setMinMax ! 0. 800.
+/score/close
+#
+# BEGIN
+/score/create/boxMesh 60_cm
+#
+/score/mesh/boxSize 0.000000001 5.0 1.25 cm
+/score/mesh/translate/xyz 59.999999999 0. 0. cm
+/score/mesh/nBin 1 1 1
+#
+/score/quantity/population popul_at_60_cm
+/score/colorMap/setMinMax ! 0. 800.
+/score/close
+#
 #######################################
 
 /score/list
@@ -54,5 +193,18 @@
 
 /score/dumpQuantityToFile slab_end1 flatCurrent1 fl1Current.txt
 /score/dumpQuantityToFile slab_end2 flatCurrent2 fl2Current.txt
-/score/dumpQuantityToFile lg_end1 flatLgCurrent1 fl1LgCurrent.txt
-/score/dumpQuantityToFile lg_end2 flatLgCurrent2 fl2LgCurrent.txt
+#/score/dumpQuantityToFile lg_end1 flatLgCurrent1 fl1LgCurrent.txt
+#/score/dumpQuantityToFile lg_end2 flatLgCurrent2 fl2LgCurrent.txt
+
+/score/dumpQuantityToFile -60_cm popul_at_-60_cm popul_at_-60_cm.txt
+/score/dumpQuantityToFile -50_cm popul_at_-50_cm popul_at_-50_cm.txt
+/score/dumpQuantityToFile -40_cm popul_at_-40_cm popul_at_-40_cm.txt
+/score/dumpQuantityToFile -30_cm popul_at_-30_cm popul_at_-30_cm.txt
+/score/dumpQuantityToFile -20_cm popul_at_-20_cm popul_at_-20_cm.txt
+/score/dumpQuantityToFile -10_cm popul_at_-10_cm popul_at_-10_cm.txt
+/score/dumpQuantityToFile 10_cm popul_at_10_cm popul_at_10_cm.txt
+/score/dumpQuantityToFile 20_cm popul_at_20_cm popul_at_20_cm.txt
+/score/dumpQuantityToFile 30_cm popul_at_30_cm popul_at_30_cm.txt
+/score/dumpQuantityToFile 40_cm popul_at_40_cm popul_at_40_cm.txt
+/score/dumpQuantityToFile 50_cm popul_at_50_cm popul_at_50_cm.txt
+/score/dumpQuantityToFile 60_cm popul_at_60_cm popul_at_60_cm.txt
