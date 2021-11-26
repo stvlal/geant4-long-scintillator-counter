@@ -2,7 +2,7 @@
 
 MyPhysicsList::MyPhysicsList()
 {
-    // register only electromagnetic and optical processes 
+    // processes registered
     RegisterPhysics (new G4EmStandardPhysics());
     RegisterPhysics (new G4OpticalPhysics());
 }

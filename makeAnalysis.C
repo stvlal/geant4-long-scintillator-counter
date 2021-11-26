@@ -1,6 +1,4 @@
-#include "countParticles.hh"
-
-void countParticles()
+void makeAnalysis()
 {
     // create objects to work with files
     std::ifstream slab_1_population("fl1Current.txt");
@@ -157,6 +155,9 @@ void countParticles()
     }
 
 
+    // a canvas with the particles counted before and after light guides
+    TCanvas *counts_slab_lg_canvas = new TCanvas("counts_slab_lg_canvas", "counts_slab_lg_canvas");
+    counts_slab_lg_canvas->cd();
 
     // output histogram with the particles counted before and after light guides
     TH1I *counts_slab_lg = new TH1I("counts_slab_lg", " ", 12, 0.0, 12.0);
@@ -167,10 +168,13 @@ void countParticles()
     counts_slab_lg->SetBinContent(9,list_of_numbers[1]);
     //counts_slab_lg->SetBinContent(11,list_of_numbers[3]);
 
+    // drawing the histogram on the canvas (counts_slab_lg)
+    counts_slab_lg->Draw();
+
 
     ////// FROM -70 CM TO -10 CM //////
 
-    // the canvas with the particles counted at range(-70, -10, 10)
+    // a canvas with the particles counted at range(-70, -10, 10)
     TCanvas *att_len_minus = new TCanvas("att_len_minus", "att_len_minus");
     att_len_minus->cd();
 
@@ -208,7 +212,7 @@ void countParticles()
 
     ////// FROM 10 CM TO 70 CM //////
 
-    // the canvas with the particles counted at range(10, 70, 10)
+    // a canvas with the particles counted at range(10, 70, 10)
     TCanvas *att_len_plus = new TCanvas("att_len_plus", "att_len_plus");
     att_len_plus->cd();
 
@@ -245,7 +249,7 @@ void countParticles()
     // output root file
     TFile *file = new TFile("histo.root", "RECREATE");
 
-    counts_slab_lg->Write();
+    counts_slab_lg_canvas->Write();
     att_len_minus->Write();
     att_len_plus->Write();
 

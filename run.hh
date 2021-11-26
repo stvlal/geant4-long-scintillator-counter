@@ -5,6 +5,7 @@
 #include "G4Run.hh"
 #include "g4root.hh"
 #include "Randomize.hh"
+#include "G4UImanager.hh"
 
 class MyRunAction : public G4UserRunAction
 {
@@ -12,8 +13,8 @@ public:
     MyRunAction();
     ~MyRunAction();
 
-    virtual void BeginOfRunAction(const G4Run*);
-    virtual void EndOfRunAction(const G4Run*);
+    virtual void BeginOfRunAction(const G4Run *);
+    virtual void EndOfRunAction(const G4Run *);
 };
 
 #endif

@@ -1,0 +1,17 @@
+/score/dumpQuantityToFile slab_end1 flatCurrent1 fl1Current.txt
+/score/dumpQuantityToFile slab_end2 flatCurrent2 fl2Current.txt
+#/score/dumpQuantityToFile lg_end1 flatLgCurrent1 fl1LgCurrent.txt
+#/score/dumpQuantityToFile lg_end2 flatLgCurrent2 fl2LgCurrent.txt
+
+/score/dumpQuantityToFile -60_cm popul_at_-60_cm popul_at_-60_cm.txt
+/score/dumpQuantityToFile -50_cm popul_at_-50_cm popul_at_-50_cm.txt
+/score/dumpQuantityToFile -40_cm popul_at_-40_cm popul_at_-40_cm.txt
+/score/dumpQuantityToFile -30_cm popul_at_-30_cm popul_at_-30_cm.txt
+/score/dumpQuantityToFile -20_cm popul_at_-20_cm popul_at_-20_cm.txt
+/score/dumpQuantityToFile -10_cm popul_at_-10_cm popul_at_-10_cm.txt
+/score/dumpQuantityToFile 10_cm popul_at_10_cm popul_at_10_cm.txt
+/score/dumpQuantityToFile 20_cm popul_at_20_cm popul_at_20_cm.txt
+/score/dumpQuantityToFile 30_cm popul_at_30_cm popul_at_30_cm.txt
+/score/dumpQuantityToFile 40_cm popul_at_40_cm popul_at_40_cm.txt
+/score/dumpQuantityToFile 50_cm popul_at_50_cm popul_at_50_cm.txt
+/score/dumpQuantityToFile 60_cm popul_at_60_cm popul_at_60_cm.txt

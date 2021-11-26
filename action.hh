@@ -12,6 +12,7 @@ public:
     ~MyActionInitialization();
 
     virtual void Build() const;
+
 };
 
 #endif

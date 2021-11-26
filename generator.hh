@@ -17,6 +17,8 @@ public:
 
 private:
     G4ParticleGun *fParticleGun;
+    G4ParticleTable *particleTable;
+    G4ParticleDefinition *particle;
 };
 
 #endif

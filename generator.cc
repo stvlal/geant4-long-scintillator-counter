@@ -7,10 +7,10 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     // fParticleGun = new G4ParticleGun(3e6);       // for gamma
 
     // get the particle for particle gun
-    G4ParticleTable *particleTable = G4ParticleTable::GetParticleTable();
+    particleTable = G4ParticleTable::GetParticleTable();
     G4String particleName = "e-";
     //G4String particleName = "gamma";
-    G4ParticleDefinition *particle = particleTable->FindParticle(particleName);
+    particle = particleTable->FindParticle(particleName);
 
     // the initial position of the particle and the direction of its momentum
     G4ThreeVector pos(0.*cm, 0.*cm, 8*cm);          // for e-
@@ -30,6 +30,8 @@ MyPrimaryGenerator::MyPrimaryGenerator()
 MyPrimaryGenerator::~MyPrimaryGenerator()
 {
     delete fParticleGun;
+    delete particleTable;
+    delete particle;
 }
 
 void MyPrimaryGenerator::GeneratePrimaries(G4Event *anEvent)

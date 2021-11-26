@@ -5,5 +5,6 @@
 /vis/drawVolume
 /vis/viewer/set/autoRefresh true
 /vis/scene/add/trajectories smooth
-/vis/scene/add/axes
+/vis/scene/endOfEventAction accumulate
+#/vis/scene/add/axes
 /tracking/storeTrajectory 1

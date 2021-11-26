@@ -1,30 +1,20 @@
 #include "construction.hh"
 
-MyDetectorConstruction::MyDetectorConstruction()
-{
-    filename = "";
-}
-
-MyDetectorConstruction::~MyDetectorConstruction()
-{
-
-}
-
 G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
     // this pointer is used for accessing internal Geant4 database
-    G4NistManager *nist = G4NistManager::Instance();
+    nist = G4NistManager::Instance();
 
     // compose the slab material
-    G4Material *slabMat = new G4Material("slabMat", 1.023*g/cm3, 2);
+    slabMat = new G4Material("slabMat", 1.023*g/cm3, 2);
     slabMat->AddElement(nist->FindOrBuildElement("H"), 10);
     slabMat->AddElement(nist->FindOrBuildElement("C"), 9);
 
     // set air as the world volume material
-    G4Material *worldMat = nist->FindOrBuildMaterial("G4_AIR");
+    worldMat = nist->FindOrBuildMaterial("G4_AIR");
 
     // set plexiglass as the light guide volume material
-    G4Material *lgMat = nist->FindOrBuildMaterial("G4_PLEXIGLASS");
+    lgMat = nist->FindOrBuildMaterial("G4_PLEXIGLASS");
 
 
     // ------------ Generate & Add Material Properties Table ------------
@@ -33,7 +23,15 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
     // wavelength obtained from the graph
     std::vector<G4double> wavelength = {
-    398.346, 401.674, 403.006, 403.907, 404.730, 405.396, 406.415, 407.629, 408.335, 409.158, 410.294, 411.117, 412.097, 412.724, 413.469, 414.096, 414.645, 415.155, 415.822, 416.410, 417.037, 417.586, 418.253, 418.841, 419.429, 419.939, 420.566, 421.506, 422.368, 423.269, 424.131, 425.462, 427.224, 428.125, 429.064, 430.748, 432.940, 434.584, 435.954, 437.324, 438.968, 440.690, 443.117, 446.013, 448.009, 450.397, 452.081, 454.273, 456.230, 459.519, 462.142, 464.217, 466.135, 467.858, 469.659, 471.498, 473.260, 475.648, 478.232, 479.680, 481.520, 483.556, 486.571, 490.095, 493.188, 496.281, 499.649
+    398.346, 401.674, 403.006, 403.907, 404.730, 405.396, 406.415, 407.629,
+    408.335, 409.158, 410.294, 411.117, 412.097, 412.724, 413.469, 414.096,
+    414.645, 415.155, 415.822, 416.410, 417.037, 417.586, 418.253, 418.841,
+    419.429, 419.939, 420.566, 421.506, 422.368, 423.269, 424.131, 425.462,
+    427.224, 428.125, 429.064, 430.748, 432.940, 434.584, 435.954, 437.324,
+    438.968, 440.690, 443.117, 446.013, 448.009, 450.397, 452.081, 454.273,
+    456.230, 459.519, 462.142, 464.217, 466.135, 467.858, 469.659, 471.498,
+    473.260, 475.648, 478.232, 479.680, 481.520, 483.556, 486.571, 490.095,
+                                                 493.188, 496.281, 499.649
     };
 
     // the vector of optical photon energies
@@ -43,21 +41,31 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     const G4double lightSpeed = 299792458;
 
     // filling out the vector of optical photon energies
-    for (G4int i = 0; i < wavelength.size(); ++i)
+    for (size_t i = 0; i < wavelength.size(); ++i)
     {
         photonEnergy.push_back(plankConst * lightSpeed * 1e9 * eV / wavelength[i]);
     }
 
 
-    // the vector down below are the normalized number of photons with a given energy in the fast scintillation component
+    // the vector down below is the normalized number of photons with
+    // a given energy in the fast scintillation component
     std::vector<G4double> scintilFast = {
-    0.00959, 0.01637, 0.03138, 0.05050, 0.07098, 0.09352, 0.12493, 0.16318, 0.19528, 0.22533, 0.27177, 0.30866, 0.35647, 0.39063, 0.43503, 0.47465, 0.50812, 0.54569, 0.58736, 0.62493, 0.67002, 0.71442, 0.75404, 0.79708, 0.82850, 0.86676, 0.90365, 0.93984, 0.96921, 0.98355, 0.99036, 0.99376, 0.98758, 0.97936, 0.96705, 0.94242, 0.90548, 0.87744, 0.84804, 0.81795, 0.77146, 0.73453, 0.67709, 0.61828, 0.57998, 0.53962, 0.51705, 0.48899, 0.46641, 0.43356, 0.41370, 0.39111, 0.36580, 0.34254, 0.30903, 0.27620, 0.24952, 0.21941, 0.18999, 0.17698, 0.15918, 0.14070, 0.11673, 0.09822, 0.08040, 0.06737, 0.05433
+    0.00959, 0.01637, 0.03138, 0.05050, 0.07098, 0.09352, 0.12493, 0.16318,
+    0.19528, 0.22533, 0.27177, 0.30866, 0.35647, 0.39063, 0.43503, 0.47465,
+    0.50812, 0.54569, 0.58736, 0.62493, 0.67002, 0.71442, 0.75404, 0.79708,
+    0.82850, 0.86676, 0.90365, 0.93984, 0.96921, 0.98355, 0.99036, 0.99376,
+    0.98758, 0.97936, 0.96705, 0.94242, 0.90548, 0.87744, 0.84804, 0.81795,
+    0.77146, 0.73453, 0.67709, 0.61828, 0.57998, 0.53962, 0.51705, 0.48899,
+    0.46641, 0.43356, 0.41370, 0.39111, 0.36580, 0.34254, 0.30903, 0.27620,
+    0.24952, 0.21941, 0.18999, 0.17698, 0.15918, 0.14070, 0.11673, 0.09822,
+                                                 0.08040, 0.06737, 0.05433
     };
 
 
-    // the refractive index for the slab material; it is assumed that there is no dispersion in the medium
+    // the refractive index for the slab material;
+    //it is assumed that there is no dispersion in the medium
     std::vector<G4double> rindexSlab;
-    for (G4int i = 0; i < wavelength.size(); ++i)
+    for (size_t i = 0; i < wavelength.size(); ++i)
     {
         rindexSlab.push_back(1.58);
     }
@@ -65,18 +73,21 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
     // the absorption length for the slab material
     std::vector<G4double> absorptionSlab;
-    for (G4int i = 0; i < wavelength.size(); ++i)
+    for (size_t i = 0; i < wavelength.size(); ++i)
     {
         absorptionSlab.push_back(380 * cm);
     }
 
     // construct the material properties table for the slab
-    G4MaterialPropertiesTable *mptSlab = new G4MaterialPropertiesTable();
+    mptSlab = new G4MaterialPropertiesTable();
 
     // add some properties to the slab material
-    mptSlab->AddProperty("RINDEX", photonEnergy, rindexSlab)->SetSpline(true);
-    mptSlab->AddProperty("ABSLENGTH", photonEnergy, absorptionSlab)->SetSpline(true);
-    mptSlab->AddProperty("FASTCOMPONENT", photonEnergy, scintilFast)->SetSpline(true);
+    mptSlab->AddProperty("RINDEX", photonEnergy, rindexSlab)
+                                        ->SetSpline(true);
+    mptSlab->AddProperty("ABSLENGTH", photonEnergy, absorptionSlab)
+                                        ->SetSpline(true);
+    mptSlab->AddProperty("FASTCOMPONENT", photonEnergy, scintilFast)
+                                        ->SetSpline(true);
 
     // the number of photons that is emitted per amount of energy absorbed
     mptSlab->AddConstProperty("SCINTILLATIONYIELD", 10000. / MeV);
@@ -87,7 +98,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     // no one knows what it is
     mptSlab->AddConstProperty("FASTTIMECONSTANT", 1. * ns);
 
-    // the relative strength of the fast component FASTCOMPONENT as a fraction of total scintillation yield
+    // the relative strength of the fast component FASTCOMPONENT
+    // as a fraction of total scintillation yield
     mptSlab->AddConstProperty("YIELDRATIO", 1.0);
 
     // apply the properties to the slab material
@@ -100,11 +112,11 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     //////// world material ////////
 
     // construct the material properties table for the world volume
-    G4MaterialPropertiesTable *mptWorld = new G4MaterialPropertiesTable();
+    mptWorld = new G4MaterialPropertiesTable();
 
     // air refractive index
     std::vector<G4double> rindexWorld;
-    for (G4int i = 0; i < wavelength.size(); ++i)
+    for (size_t i = 0; i < wavelength.size(); ++i)
     {
         rindexWorld.push_back(1.0);
     }
@@ -119,18 +131,18 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     //////// light guide material ////////
 
     // construct the material properties table for the light guide volume
-    G4MaterialPropertiesTable *mptLG = new G4MaterialPropertiesTable();
+    mptLG = new G4MaterialPropertiesTable();
 
     // plexiglass refractive index
     std::vector<G4double> rindexLG;
-    for (G4int i = 0; i < wavelength.size(); ++i)
+    for (size_t i = 0; i < wavelength.size(); ++i)
     {
         rindexLG.push_back(1.49);
     }
 
     // the absorption length for the light guide material
     std::vector<G4double> absorptionLG;
-    for (G4int i = 0; i < wavelength.size(); ++i)
+    for (size_t i = 0; i < wavelength.size(); ++i)
     {
         absorptionLG.push_back(380 * cm);
     }
@@ -146,47 +158,65 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     // ------------- Volumes --------------
 
     // set the sizes of the world volume
-    G4Box *solidWorld = new G4Box("solidWorld", 120*cm, 20*cm, 16.25*cm);
+    solidWorld = new G4Box("solidWorld", 150*cm, 30*cm, 25*cm);
 
     // create a logical world volume
-    G4LogicalVolume *logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicWorld");
+    logicWorld = new G4LogicalVolume(solidWorld, worldMat, "logicWorld");
+    logicWorld->SetVisAttributes(G4VisAttributes::Invisible);
 
     // create a physical world volume
-    G4VPhysicalVolume *physWorld = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicWorld, "physWorld", 0, false, 0, true);
+    physWorld = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.),
+                 logicWorld, "physWorld", 0, false, 0, true);
 
+
+    // color for the slab (blue)
+    slabVisAtt = new G4VisAttributes(G4Colour(0.3,0.3,0.3));
+    slabVisAtt->SetForceSolid(true);
+    slabVisAtt->SetVisibility(true);
 
     // set the sizes of the slab volume
-    G4Box *solidSlab = new G4Box("slab", 70*cm, 5*cm, 1.25*cm);
+    solidSlab = new G4Box("slab", 70*cm, 5*cm, 1.25*cm);
 
     // create a logical slab volume
-    G4LogicalVolume *logicSlab = new G4LogicalVolume(solidSlab, slabMat, "logicSlab");
+    logicSlab = new G4LogicalVolume(solidSlab, slabMat, "logicSlab");
+    logicSlab->SetVisAttributes(slabVisAtt);
 
     // create a physical slab volume
-    G4VPhysicalVolume *physSlab = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), logicSlab, "physSlab", logicWorld, false, 0, true);
+    physSlab = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.),
+         logicSlab, "physSlab", logicWorld, false, 0, true);
 
+
+    // color for the light guides (brown)
+    lgVisAtt = new G4VisAttributes(G4Colour(0.5,0.3,0.2));
+    lgVisAtt->SetForceSolid(true);
+    lgVisAtt->SetVisibility(true);
 
     // getting the CAD model (some_filename.stl)
-    CADMesh *mesh = new CADMesh((char*) filename.c_str());
+    mesh = new CADMesh((char*) filename.c_str());
     mesh->SetScale(mm);
     mesh->SetReverse(false);
 
     // CAD model 1 rotation
-    G4RotationMatrix *rot1 = new G4RotationMatrix();
+    rot1 = new G4RotationMatrix();
     rot1->rotateZ(90*deg);
 
     // CAD model 2 rotation
-    G4RotationMatrix *rot2 = new G4RotationMatrix();
+    rot2 = new G4RotationMatrix();
     rot2->rotateZ(-90*deg);
 
     // creating the first light guide
-    G4VSolid *solidLG_1 = mesh->TessellatedMesh();
-    G4LogicalVolume *logicLG_1 = new G4LogicalVolume(solidLG_1, lgMat, "logicLG_1", 0, 0, 0);
-    G4VPhysicalVolume *physLG_1 = new G4PVPlacement(rot1, G4ThreeVector(-70*cm, 0.,0.), logicLG_1, "physLG_1", logicWorld, false, 0, true);
+    solidLG_1 = mesh->TessellatedMesh();
+    logicLG_1 = new G4LogicalVolume(solidLG_1, lgMat, "logicLG_1", 0, 0, 0);
+    logicLG_1->SetVisAttributes(lgVisAtt);
+    physLG_1 = new G4PVPlacement(rot1, G4ThreeVector(-70*cm, 0.,0.),
+                 logicLG_1, "physLG_1", logicWorld, false, 0, true);
 
     // creating the second light guide
-    G4VSolid *solidLG_2 = mesh->TessellatedMesh();
-    G4LogicalVolume *logicLG_2 = new G4LogicalVolume(solidLG_2, lgMat, "logicLG_2", 0, 0, 0);
-    G4VPhysicalVolume *physLG_2 = new G4PVPlacement(rot2, G4ThreeVector(70*cm, 0.,0.), logicLG_2, "physLG_2", logicWorld, false, 0, true);
+    solidLG_2 = mesh->TessellatedMesh();
+    logicLG_2 = new G4LogicalVolume(solidLG_2, lgMat, "logicLG_2", 0, 0, 0);
+    logicLG_2->SetVisAttributes(lgVisAtt);
+    physLG_2 = new G4PVPlacement(rot2, G4ThreeVector(70*cm, 0.,0.),
+                logicLG_2, "physLG_2", logicWorld, false, 0, true);
 
 
     // ------------- Surfaces --------------
@@ -194,42 +224,56 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     //////// slab - air surface ////////
 
     // construct slab - air optical surface
-    G4OpticalSurface *opSlabAirSurface = new G4OpticalSurface("opSlabAirSurface");
-    opSlabAirSurface->SetType(dielectric_dielectric);                    // set the type of interface
-    opSlabAirSurface->SetModel(glisur);                              // set the simulation model used by the boundary process
-    opSlabAirSurface->SetFinish(polished);                     // set the surface finish
+    opSlabAirSurface = new G4OpticalSurface("opSlabAirSurface");
+    // set the type of interface
+    opSlabAirSurface->SetType(dielectric_dielectric);
+    // set the simulation model used by the boundary process
+    opSlabAirSurface->SetModel(glisur);
+    // set the surface finish
+    opSlabAirSurface->SetFinish(polished);
 
 
     // create a logical border surface
-    G4LogicalBorderSurface *slabAirSurface = new G4LogicalBorderSurface("slabAirSurface", physSlab, physWorld, opSlabAirSurface);
+    slabAirSurface = new G4LogicalBorderSurface("slabAirSurface",
+                          physSlab, physWorld, opSlabAirSurface);
 
 
     //////// light guides - air surface ////////
 
     // construct light guide - air optical surface
-    G4OpticalSurface *opLgAirSurface = new G4OpticalSurface("opLgAirSurface");
-    opLgAirSurface->SetType(dielectric_dielectric);                 // set the type of interface
-    opLgAirSurface->SetModel(glisur);                           // set the simulation model used by the boundary process
-    opLgAirSurface->SetFinish(polished);                  // set the surface finish
+    opLgAirSurface = new G4OpticalSurface("opLgAirSurface");
+    // set the type of interface
+    opLgAirSurface->SetType(dielectric_dielectric);
+    // set the simulation model used by the boundary process
+    opLgAirSurface->SetModel(glisur);
+    // set the surface finish
+    opLgAirSurface->SetFinish(polished);
 
 
     // create a logical border surface
-    G4LogicalBorderSurface *lgAirSurface_1 = new G4LogicalBorderSurface("lgAirSurface_1", physLG_1, physWorld, opLgAirSurface);
-    G4LogicalBorderSurface *lgAirSurface_2 = new G4LogicalBorderSurface("lgAirSurface_2", physLG_2, physWorld, opLgAirSurface);
+    lgAirSurface_1 = new G4LogicalBorderSurface("lgAirSurface_1",
+                            physLG_1, physWorld, opLgAirSurface);
+    lgAirSurface_2 = new G4LogicalBorderSurface("lgAirSurface_2",
+                            physLG_2, physWorld, opLgAirSurface);
 
 
     //////// slab - light guides surface ////////
 
     // construct slab - light guides optical surface
-    G4OpticalSurface *opSlabLgSurface = new G4OpticalSurface("opSlabLgSurface");
-    opSlabLgSurface->SetType(dielectric_dielectric);          // set the type of interface
-    opSlabLgSurface->SetModel(glisur);                        // set the simulation model used by the boundary process
-    opSlabLgSurface->SetFinish(polished);                     // set the surface finish
+    opSlabLgSurface = new G4OpticalSurface("opSlabLgSurface");
+    // set the type of interface
+    opSlabLgSurface->SetType(dielectric_dielectric);
+    // set the simulation model used by the boundary process
+    opSlabLgSurface->SetModel(glisur);
+    // set the surface finish
+    opSlabLgSurface->SetFinish(polished);
 
 
     // create a logical border surface
-    G4LogicalBorderSurface *slabLgSurface_1 = new G4LogicalBorderSurface("slabLgSurface_1", physSlab, physLG_1, opSlabLgSurface);
-    G4LogicalBorderSurface *slabLgSurface_2 = new G4LogicalBorderSurface("slabLgSurface_2", physSlab, physLG_2, opSlabLgSurface);
+    slabLgSurface_1 = new G4LogicalBorderSurface("slabLgSurface_1",
+                              physSlab, physLG_1, opSlabLgSurface);
+    slabLgSurface_2 = new G4LogicalBorderSurface("slabLgSurface_2",
+                              physSlab, physLG_2, opSlabLgSurface);
 
 
 /*    // Generate & Add Material Properties Table attached to the optical surfaces
@@ -281,47 +325,6 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     opLgAirSurface->SetMaterialPropertiesTable(mptLgSurface);
 
 */
-    // ------------- Counters at the ends of the light guides --------------
-    // hereafter counter = a sensitive detector at the end of the light guides (something like PMT)
 
-    // set the sizes of the counter volume
-    G4Box *solidDetector = new G4Box("solidDetector", 0.5*mm, 2.3*cm, 2.3*cm);
-
-    // create a logical counter volume
-    logicDetector = new G4LogicalVolume(solidDetector, worldMat, "logicDetector");
-
-    // create a physical counters volumes; one of them has index '0', another one has index '1'
-    for (G4int i = 0; i < 2; i++)
-    {
-        G4VPhysicalVolume *physDetector = new G4PVPlacement(0, G4ThreeVector(88.05*cm - 2*i*88.05*cm, 0., 0.), logicDetector, "physDetector", logicWorld, false, i, true);
-    }
-
-
-/*    // ------------- Counters at the ends of the slab --------------
-
-    // set the sizes of the counter volume
-    G4Box *solidInnerDetector = new G4Box("solidInnerDetector", 0.5*mm, 5*cm, 1.25*cm);
-
-    // create a logical counter volume
-    logicInnerDetector = new G4LogicalVolume(solidInnerDetector, slabMat, "logicInnerDetector");
-
-    // create a physical counters volumes; one of them has index '2', another one has index '3'
-    for (G4int i = 0; i < 2; i++)
-    {
-        G4VPhysicalVolume *physInnerDetector = new G4PVPlacement(0, G4ThreeVector(69.95*cm - 2*i*69.95*cm, 0., 0.), logicInnerDetector, "physInnerDetector", logicWorld, false, i+2, true);
-    }
-*/
     return physWorld;
-}
-
-// the function for sensitive detector construction
-void MyDetectorConstruction::ConstructSDandField()
-{
-    MySensitiveDetector *sensDet = new MySensitiveDetector("sensitiveDetector");
-
-    logicDetector->SetSensitiveDetector(sensDet);
-
-    //MySensitiveDetector *sensInnerDet = new MySensitiveDetector("sensitiveInnerDetector");
-
-    //logicInnerDetector->SetSensitiveDetector(sensInnerDet);
 }
