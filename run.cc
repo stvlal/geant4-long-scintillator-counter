@@ -26,5 +26,5 @@ void MyRunAction::EndOfRunAction(const G4Run *)
     // write scorers output into the files
     G4UImanager *UImanager = G4UImanager::GetUIpointer();
     UImanager->ApplyCommand("/control/execute scoring_end.mac");
-    delete UImanager;
+    //delete UImanager;
 }
