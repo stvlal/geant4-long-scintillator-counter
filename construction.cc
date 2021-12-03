@@ -1,7 +1,17 @@
 #include "construction.hh"
 
+MyDetectorConstruction::MyDetectorConstruction()
+{
+    filename = "";
+}
+MyDetectorConstruction::~MyDetectorConstruction()
+{
+}
+
 G4VPhysicalVolume *MyDetectorConstruction::Construct()
 {
+    // ------------ Materials ------------
+
     // this pointer is used for accessing internal Geant4 database
     nist = G4NistManager::Instance();
 
@@ -15,6 +25,12 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
     // set plexiglass as the light guide volume material
     lgMat = nist->FindOrBuildMaterial("G4_PLEXIGLASS");
+
+    G4Material *pmtMat = nist->FindOrBuildMaterial("G4_GLASS_PLATE");
+
+
+    G4Material *photocathMat = new G4Material("photocathMat", 2.6989*g/cm3, 1);
+    photocathMat->AddElement(nist->FindOrBuildElement("Al"), 1);
 
 
     // ------------ Generate & Add Material Properties Table ------------
@@ -217,6 +233,90 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     logicLG_2->SetVisAttributes(lgVisAtt);
     physLG_2 = new G4PVPlacement(rot2, G4ThreeVector(70*cm, 0.,0.),
                 logicLG_2, "physLG_2", logicWorld, false, 0, true);
+
+
+    // ------------- PMTs --------------
+
+    // color for the PMTs ()
+    G4VisAttributes *pmtVisAtt = new G4VisAttributes(G4Colour(0.7,0.9,0.7));
+    pmtVisAtt->SetForceSolid(true);
+    pmtVisAtt->SetVisibility(true);
+
+    // creating PMTs form
+    G4double innerRadius_pmt = 0.;
+    G4double outerRadius_pmt = 23. * mm;
+    G4double height_pmt = 5. * mm;
+    G4double startAngle_pmt = 0.;
+    G4double spanningAngle_pmt = 360. * deg;
+
+    G4RotationMatrix *rotPMT = new G4RotationMatrix();
+    rotPMT->rotateY(90*deg);
+
+    G4Tubs *solidPMT = new G4Tubs("solidPMT", innerRadius_pmt, outerRadius_pmt,
+                                height_pmt, startAngle_pmt, spanningAngle_pmt);
+
+    G4Tubs *solidPhotocath = new G4Tubs("solidPhotocath", innerRadius_pmt, outerRadius_pmt,
+                          height_pmt / 2., startAngle_pmt, spanningAngle_pmt);
+
+
+    G4LogicalVolume *logicPMT_1 = new G4LogicalVolume(solidPMT,
+                                         pmtMat, "logicPMT_1");
+
+    G4LogicalVolume *logicPMT_2 = new G4LogicalVolume(solidPMT,
+                                         pmtMat, "logicPMT_2");
+
+    logicPMT_1->SetVisAttributes(pmtVisAtt);
+    logicPMT_2->SetVisAttributes(pmtVisAtt);
+
+    G4LogicalVolume *logicPhotocath = new G4LogicalVolume(solidPhotocath,
+                                         photocathMat, "logicPhotocath");
+
+
+    G4VPhysicalVolume *physPhotocath_1 = new G4PVPlacement(0, G4ThreeVector(0., 0., -height_pmt / 2.),
+                                        logicPhotocath,"physPhotocath_1", logicPMT_1, false, 0, true);
+
+    G4VPhysicalVolume *physPhotocath_2 = new G4PVPlacement(0, G4ThreeVector(0., 0.,  height_pmt / 2.),
+                                        logicPhotocath,"physPhotocath_2", logicPMT_2, false, 0, true);
+
+
+    G4VPhysicalVolume *physPMT_1 = new G4PVPlacement(rotPMT, G4ThreeVector(-88.5*cm,0.,0.),
+                                      logicPMT_1, "physPMT_1", logicWorld, false, 0, true);
+    G4VPhysicalVolume *physPMT_2 = new G4PVPlacement(rotPMT, G4ThreeVector(88.5*cm,0.,0.),
+                                      logicPMT_2, "physPMT_2", logicWorld, false, 0, true);
+
+
+    // Photocathode surface properties
+
+    std::vector<G4double> photocath_EFF;
+    for (size_t i = 0; i < wavelength.size(); ++i)
+    {
+        photocath_EFF.push_back(1.);
+    }
+
+    std::vector<G4double> photocath_ReR;
+    for (size_t i = 0; i < wavelength.size(); ++i)
+    {
+        photocath_ReR.push_back(1.92);
+    }
+
+    std::vector<G4double> photocath_ImR;
+    for (size_t i = 0; i < wavelength.size(); ++i)
+    {
+        photocath_ImR.push_back(1.69);
+    }
+
+    G4MaterialPropertiesTable *mptPhotocath = new G4MaterialPropertiesTable();
+    mptPhotocath->AddProperty("EFFICIENCY", photonEnergy, photocath_EFF);
+    mptPhotocath->AddProperty("REALRINDEX", photonEnergy, photocath_ReR);
+    mptPhotocath->AddProperty("IMAGINARYRINDEX", photonEnergy, photocath_ImR);
+
+    G4OpticalSurface *opPhotocathSurface = new G4OpticalSurface(
+                           "opPhotocathSurface", glisur, polished, dielectric_metal);
+    opPhotocathSurface->SetMaterialPropertiesTable(mptPhotocath);
+
+
+    // Create logical skin surface
+    new G4LogicalSkinSurface("photocathSurface", logicPhotocath, opPhotocathSurface);
 
 
     // ------------- Surfaces --------------

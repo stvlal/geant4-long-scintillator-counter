@@ -71,11 +71,8 @@ int main(int argc, char **argv)
         UImanager->ApplyCommand(command + fileName);
     }
 
-    delete runManager;
-    delete scManager;
-    delete myDetectorConstruction;
     delete visManager;
-    delete UImanager;
-
+    delete runManager;
+    
     return 0;
 }

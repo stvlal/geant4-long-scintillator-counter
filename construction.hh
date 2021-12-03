@@ -15,6 +15,8 @@
 #include "G4PhysicalConstants.hh"
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
+#include "G4Tubs.hh"
+#include "G4LogicalSkinSurface.hh"
 
 class MyDetectorConstruction: public G4VUserDetectorConstruction
 {
@@ -63,6 +65,8 @@ private:
     G4VSolid *solidLG_2;
     G4LogicalVolume *logicLG_2;
     G4VPhysicalVolume *physLG_2;
+
+
 
     G4OpticalSurface *opSlabAirSurface;
     G4LogicalBorderSurface *slabAirSurface;
