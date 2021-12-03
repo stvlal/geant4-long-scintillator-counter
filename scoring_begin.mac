@@ -24,25 +24,25 @@
 #
 #
 ########################################
-#/score/create/cylinderMesh lg_end1
-##
-#/score/mesh/cylinderSize 2.3 0.000000001 cm
-#/score/mesh/translate/xyz -87.999999999 0. 0. cm
-#/score/mesh/nBin 1 1 1
-##
-#/score/quantity/population flatLgCurrent1
-#/score/colorMap/setMinMax ! 0. 800.
-#/score/close
-########################################
-#/score/create/cylinderMesh lg_end2
-##
-#/score/mesh/cylinderSize 2.3 0.000000001 cm
-#/score/mesh/translate/xyz 87.999999999 0. 0. cm
-#/score/mesh/nBin 1 1 1
-##
-#/score/quantity/population flatLgCurrent2
-#/score/colorMap/setMinMax ! 0. 800.
-#/score/close
+/score/create/cylinderMesh lg_end1
+#
+/score/mesh/cylinderSize 2.3 0.000000001 cm
+/score/mesh/translate/xyz -87.999999999 0. 0. cm
+/score/mesh/nBin 1 1 1
+#
+/score/quantity/population flatLgCurrent1
+/score/colorMap/setMinMax ! 0. 800.
+/score/close
+#######################################
+/score/create/cylinderMesh lg_end2
+#
+/score/mesh/cylinderSize 2.3 0.000000001 cm
+/score/mesh/translate/xyz 87.999999999 0. 0. cm
+/score/mesh/nBin 1 1 1
+#
+/score/quantity/population flatLgCurrent2
+/score/colorMap/setMinMax ! 0. 800.
+/score/close
 #######################################
 #
 #

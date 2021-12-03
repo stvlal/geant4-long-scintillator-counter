@@ -59,7 +59,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     // filling out the vector of optical photon energies
     for (size_t i = 0; i < wavelength.size(); ++i)
     {
-        photonEnergy.push_back(plankConst * lightSpeed * 1e9 * eV / wavelength[i]);
+        photonEnergy.push_back(plankConst * lightSpeed * 1e9 * eV /
+                                                            wavelength[i]);
     }
 
 
@@ -238,7 +239,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     // ------------- PMTs --------------
 
     // color for the PMTs ()
-    G4VisAttributes *pmtVisAtt = new G4VisAttributes(G4Colour(0.7,0.9,0.7));
+    G4VisAttributes *pmtVisAtt = new G4VisAttributes(G4Colour(0.7,0.8,0.7));
     pmtVisAtt->SetForceSolid(true);
     pmtVisAtt->SetVisibility(true);
 
@@ -255,8 +256,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     G4Tubs *solidPMT = new G4Tubs("solidPMT", innerRadius_pmt, outerRadius_pmt,
                                 height_pmt, startAngle_pmt, spanningAngle_pmt);
 
-    G4Tubs *solidPhotocath = new G4Tubs("solidPhotocath", innerRadius_pmt, outerRadius_pmt,
-                          height_pmt / 2., startAngle_pmt, spanningAngle_pmt);
+    G4Tubs *solidPhotocath = new G4Tubs("solidPhotocath", innerRadius_pmt,
+      outerRadius_pmt,height_pmt / 2., startAngle_pmt, spanningAngle_pmt);
 
 
     G4LogicalVolume *logicPMT_1 = new G4LogicalVolume(solidPMT,
@@ -272,17 +273,21 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
                                          photocathMat, "logicPhotocath");
 
 
-    G4VPhysicalVolume *physPhotocath_1 = new G4PVPlacement(0, G4ThreeVector(0., 0., -height_pmt / 2.),
-                                        logicPhotocath,"physPhotocath_1", logicPMT_1, false, 0, true);
+    G4VPhysicalVolume *physPhotocath_1 = new G4PVPlacement(0,
+      G4ThreeVector(0., 0., height_pmt / 2.),logicPhotocath,"physPhotocath_1",
+                                                   logicPMT_1, false, 0, true);
 
-    G4VPhysicalVolume *physPhotocath_2 = new G4PVPlacement(0, G4ThreeVector(0., 0.,  height_pmt / 2.),
-                                        logicPhotocath,"physPhotocath_2", logicPMT_2, false, 0, true);
+    G4VPhysicalVolume *physPhotocath_2 = new G4PVPlacement(0,
+      G4ThreeVector(0., 0.,  -height_pmt / 2.),logicPhotocath,"physPhotocath_2",
+                                                   logicPMT_2, false, 0, true);
 
 
-    G4VPhysicalVolume *physPMT_1 = new G4PVPlacement(rotPMT, G4ThreeVector(-88.5*cm,0.,0.),
-                                      logicPMT_1, "physPMT_1", logicWorld, false, 0, true);
-    G4VPhysicalVolume *physPMT_2 = new G4PVPlacement(rotPMT, G4ThreeVector(88.5*cm,0.,0.),
-                                      logicPMT_2, "physPMT_2", logicWorld, false, 0, true);
+    G4VPhysicalVolume *physPMT_1 = new G4PVPlacement(rotPMT,
+      G4ThreeVector(-88.5*cm,0.,0.), logicPMT_1, "physPMT_1",
+                                 logicWorld, false, 0, true);
+    G4VPhysicalVolume *physPMT_2 = new G4PVPlacement(rotPMT,
+      G4ThreeVector(88.5*cm,0.,0.),logicPMT_2, "physPMT_2",
+                               logicWorld, false, 0, true);
 
 
     // Photocathode surface properties
@@ -311,12 +316,13 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     mptPhotocath->AddProperty("IMAGINARYRINDEX", photonEnergy, photocath_ImR);
 
     G4OpticalSurface *opPhotocathSurface = new G4OpticalSurface(
-                           "opPhotocathSurface", glisur, polished, dielectric_metal);
+                    "opPhotocathSurface", glisur, polished, dielectric_metal);
     opPhotocathSurface->SetMaterialPropertiesTable(mptPhotocath);
 
 
     // Create logical skin surface
-    new G4LogicalSkinSurface("photocathSurface", logicPhotocath, opPhotocathSurface);
+    new G4LogicalSkinSurface("photocathSurface", logicPhotocath,
+                                            opPhotocathSurface);
 
 
     // ------------- Surfaces --------------

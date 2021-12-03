@@ -2,7 +2,8 @@
 #define TOF_DETECTOR
 
 #include <iostream>
-#include "G4RunManager.hh"
+//#include "G4RunManager.hh"
+#include "MyRunManager.hh"
 #include "G4UIExecutive.hh"
 #include "G4VisManager.hh"
 #include "G4VisExecutive.hh"
@@ -12,7 +13,8 @@
 #include "action.hh"
 #include "G4ScoringManager.hh"
 
-G4RunManager *runManager;
+//G4RunManager *runManager;
+MyRunManager *runManager;
 G4ScoringManager *scManager;
 MyDetectorConstruction *myDetectorConstruction;
 G4UIExecutive *ui;

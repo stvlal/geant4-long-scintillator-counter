@@ -3,7 +3,10 @@
 int main(int argc, char **argv)
 {
     // construct the default run manager
-    runManager = new G4RunManager();
+    //runManager = new G4RunManager();
+
+    // construct the custom run manager
+    runManager = new MyRunManager();
 
     // Activate UI-command base scorer
     scManager = G4ScoringManager::GetScoringManager();
@@ -73,6 +76,6 @@ int main(int argc, char **argv)
 
     delete visManager;
     delete runManager;
-    
+
     return 0;
 }

@@ -3,8 +3,8 @@ void makeAnalysis()
     // create objects to work with files
     std::ifstream slab_1_population("fl1Current.txt");
     std::ifstream slab_2_population("fl2Current.txt");
-    //std::ifstream lg_1_population("fl1LgCurrent.txt");
-    //std::ifstream lg_2_population("fl2LgCurrent.txt");
+    std::ifstream lg_1_population("fl1LgCurrent.txt");
+    std::ifstream lg_2_population("fl2LgCurrent.txt");
 
 
     // two loops for filling out a vector of ifstream objects associated with
@@ -27,16 +27,16 @@ void makeAnalysis()
     // the lists with the lines in the files created by the scorers
     std::string list_slab1[5] = {};
     std::string list_slab2[5] = {};
-    //std::string list_lg1[5] = {};
-    //std::string list_lg2[5] = {};
+    std::string list_lg1[5] = {};
+    std::string list_lg2[5] = {};
 
     std::string list_slab[12][5] = {};
 
     // counters for filling out the lists
     int count_slab1 = 0;
     int count_slab2 = 0;
-    //int count_lg1 = 0;
-    //int count_lg2 = 0;
+    int count_lg1 = 0;
+    int count_lg2 = 0;
 
     std::cout << '\n';
 
@@ -56,7 +56,7 @@ void makeAnalysis()
         ++count_slab2;
     }
 
-/*    // read the file fl1LgCurrent.txt
+    // read the file fl1LgCurrent.txt
     while (lg_1_population)
     {
         getline(lg_1_population, list_lg1[count_lg1]);
@@ -71,7 +71,7 @@ void makeAnalysis()
         std::cout << list_lg2[count_lg2] << std::endl;
         ++count_lg2;
     }
-*/
+
 
     // read the files created by the scorers positioned along the slab
     for (int i = 0; i < 12; ++i)
@@ -87,8 +87,7 @@ void makeAnalysis()
 
 
     // lists with the lines of numbers (4th line in each file) in the files created by the scorers
-    //std::string list_of_strings[4] = {list_slab1[3], list_slab2[3], list_lg1[3], list_lg2[3]};
-    std::string list_of_strings[2] = {list_slab1[3], list_slab2[3]};
+    std::string list_of_strings[4] = {list_slab1[3], list_slab2[3], list_lg1[3], list_lg2[3]};
 
     std::string list_of_strings_along_slab[12] = {};
     for (int i = 0; i < 12; ++i)
@@ -97,8 +96,7 @@ void makeAnalysis()
 
 
     // the numbers of particles counted with the scorers
-    //int list_of_numbers[4] = {};
-    int list_of_numbers[2] = {};
+    int list_of_numbers[4] = {};
     int list_of_numbers_along_slab[12] = {};
 
 
@@ -106,7 +104,7 @@ void makeAnalysis()
     std::string delimiter = ",";
 
     // a loop over list_of_strings[4] in order to fill out the list_of_numbers[4]
-    for (int i = 0; i < 2; ++i)
+    for (int i = 0; i < 4; ++i)
     {
         size_t position = 0;
         int count = 0;
@@ -163,10 +161,10 @@ void makeAnalysis()
     TH1I *counts_slab_lg = new TH1I("counts_slab_lg", " ", 12, 0.0, 12.0);
 
     // setting up the content of the histogram
-    //counts_slab_lg->SetBinContent(2,list_of_numbers[2]);
+    counts_slab_lg->SetBinContent(2,list_of_numbers[2]);
     counts_slab_lg->SetBinContent(4,list_of_numbers[0]);
     counts_slab_lg->SetBinContent(9,list_of_numbers[1]);
-    //counts_slab_lg->SetBinContent(11,list_of_numbers[3]);
+    counts_slab_lg->SetBinContent(11,list_of_numbers[3]);
 
     // drawing the histogram on the canvas (counts_slab_lg)
     counts_slab_lg->Draw();
