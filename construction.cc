@@ -26,11 +26,10 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     // set plexiglass as the light guide volume material
     lgMat = nist->FindOrBuildMaterial("G4_PLEXIGLASS");
 
-    G4Material *pmtMat = nist->FindOrBuildMaterial("G4_GLASS_PLATE");
 
+    G4Material *pmtMat = G4Material::GetMaterial("Glass");
 
-    G4Material *photocathMat = new G4Material("photocathMat", 2.6989*g/cm3, 1);
-    photocathMat->AddElement(nist->FindOrBuildElement("Al"), 1);
+    G4Material *photocathMat = G4Material::GetMaterial("Al");
 
 
     // ------------ Generate & Add Material Properties Table ------------
@@ -291,24 +290,16 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 
 
     // Photocathode surface properties
-
     std::vector<G4double> photocath_EFF;
-    for (size_t i = 0; i < wavelength.size(); ++i)
-    {
-        photocath_EFF.push_back(1.);
-    }
-
     std::vector<G4double> photocath_ReR;
-    for (size_t i = 0; i < wavelength.size(); ++i)
-    {
-        photocath_ReR.push_back(1.92);
-    }
-
     std::vector<G4double> photocath_ImR;
     for (size_t i = 0; i < wavelength.size(); ++i)
     {
+        photocath_EFF.push_back(1.);
+        photocath_ReR.push_back(1.92);
         photocath_ImR.push_back(1.69);
     }
+
 
     G4MaterialPropertiesTable *mptPhotocath = new G4MaterialPropertiesTable();
     mptPhotocath->AddProperty("EFFICIENCY", photonEnergy, photocath_EFF);
@@ -337,6 +328,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     opSlabAirSurface->SetModel(glisur);
     // set the surface finish
     opSlabAirSurface->SetFinish(polished);
+    //opSlabAirSurface->SetFinish(polishedfrontpainted);
 
 
     // create a logical border surface
@@ -354,6 +346,7 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     opLgAirSurface->SetModel(glisur);
     // set the surface finish
     opLgAirSurface->SetFinish(polished);
+    //opLgAirSurface->SetFinish(polishedfrontpainted);
 
 
     // create a logical border surface

@@ -178,6 +178,7 @@ void makeAnalysis()
 
     // the histogram for attenuation length measurements (from -70 cm to -10 cm)
     TH1I *attenuation_length_minus_x = new TH1I("attenuation_length_minus_x", " ", 7, -75., -5.);
+    attenuation_length_minus_x->SetStats(0);
 
     // filling out the histogram
     attenuation_length_minus_x->SetBinContent(1, list_of_numbers[0]);
@@ -216,6 +217,7 @@ void makeAnalysis()
 
     // the histogram for attenuation length measurements (from 10 cm to 70 cm)
     TH1I *attenuation_length_plus_x = new TH1I("attenuation_length_plus_x", " ", 7, 5., 75.);
+    attenuation_length_plus_x->SetStats(0);
 
     // filling out the histogram
     attenuation_length_plus_x->SetBinContent(7, list_of_numbers[1]);
