@@ -2,9 +2,7 @@ Before run the programm don't forget to source ../path/to/geant4-install/bin/gea
 
 Usage:
 
-Download this repository to ../some/path/to/tof_detector/
-
-cd ../some/path/to/tof_detector/
+mkdir build
 
 cd build/
 
@@ -12,10 +10,8 @@ cmake ..
 
 make
 
-Interactive mode:
-./tof_Detector
+./tof_Detector run.mac light_guide.stl, or
+./tof_Detector light_guide.stl
 
-Batch mode:
-./tof_Detector run.mac
 
 Editing *.mac files only in the 'tof_detector' directory (not in the 'build'). After any editing *.mac files you should execute 'cmake ..' in the 'build' directory. cmake copies all *.mac files into 'build' folder from 'tof_detector' directory.

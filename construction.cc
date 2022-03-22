@@ -27,9 +27,15 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     lgMat = nist->FindOrBuildMaterial("G4_PLEXIGLASS");
 
 
-    G4Material *pmtMat = G4Material::GetMaterial("Glass");
+    //G4Material *pmtMat = G4Material::GetMaterial("Glass");
+    G4Material *pmtMat = nist->FindOrBuildMaterial("G4_GLASS_PLATE");
 
-    G4Material *photocathMat = G4Material::GetMaterial("Al");
+    //G4Material *photocathMat = G4Material::GetMaterial("Al");
+    // compose the photocathode material ( 2.7 is the density of aluminum)
+    G4Material *photocathMat = new G4Material("photocathMat", 2.7*g/cm3, 3);
+    photocathMat->AddElement(nist->FindOrBuildElement("K"), 1);
+    photocathMat->AddElement(nist->FindOrBuildElement("Cs"), 1);
+    photocathMat->AddElement(nist->FindOrBuildElement("Sb"), 1);
 
 
     // ------------ Generate & Add Material Properties Table ------------
@@ -252,59 +258,110 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     G4RotationMatrix *rotPMT = new G4RotationMatrix();
     rotPMT->rotateY(90*deg);
 
-    G4Tubs *solidPMT = new G4Tubs("solidPMT", innerRadius_pmt, outerRadius_pmt,
+    solidPMT = new G4Tubs("solidPMT", innerRadius_pmt, outerRadius_pmt,
                                 height_pmt, startAngle_pmt, spanningAngle_pmt);
 
-    G4Tubs *solidPhotocath = new G4Tubs("solidPhotocath", innerRadius_pmt,
+    solidPhotocath = new G4Tubs("solidPhotocath", innerRadius_pmt,
       outerRadius_pmt,height_pmt / 2., startAngle_pmt, spanningAngle_pmt);
 
 
-    G4LogicalVolume *logicPMT_1 = new G4LogicalVolume(solidPMT,
+    logicPMT_1 = new G4LogicalVolume(solidPMT,
                                          pmtMat, "logicPMT_1");
 
-    G4LogicalVolume *logicPMT_2 = new G4LogicalVolume(solidPMT,
+    logicPMT_2 = new G4LogicalVolume(solidPMT,
                                          pmtMat, "logicPMT_2");
 
     logicPMT_1->SetVisAttributes(pmtVisAtt);
     logicPMT_2->SetVisAttributes(pmtVisAtt);
 
-    G4LogicalVolume *logicPhotocath = new G4LogicalVolume(solidPhotocath,
-                                         photocathMat, "logicPhotocath");
+    logicPhotocath = new G4LogicalVolume(solidPhotocath,
+                        photocathMat, "logicPhotocath");
 
 
-    G4VPhysicalVolume *physPhotocath_1 = new G4PVPlacement(0,
+    physPhotocath_1 = new G4PVPlacement(0,
       G4ThreeVector(0., 0., height_pmt / 2.),logicPhotocath,"physPhotocath_1",
                                                    logicPMT_1, false, 0, true);
 
-    G4VPhysicalVolume *physPhotocath_2 = new G4PVPlacement(0,
+    physPhotocath_2 = new G4PVPlacement(0,
       G4ThreeVector(0., 0.,  -height_pmt / 2.),logicPhotocath,"physPhotocath_2",
                                                    logicPMT_2, false, 0, true);
 
 
-    G4VPhysicalVolume *physPMT_1 = new G4PVPlacement(rotPMT,
+    physPMT_1 = new G4PVPlacement(rotPMT,
       G4ThreeVector(-88.5*cm,0.,0.), logicPMT_1, "physPMT_1",
                                  logicWorld, false, 0, true);
-    G4VPhysicalVolume *physPMT_2 = new G4PVPlacement(rotPMT,
+    physPMT_2 = new G4PVPlacement(rotPMT,
       G4ThreeVector(88.5*cm,0.,0.),logicPMT_2, "physPMT_2",
                                logicWorld, false, 0, true);
 
 
     // Photocathode surface properties
-    std::vector<G4double> photocath_EFF;
-    std::vector<G4double> photocath_ReR;
-    std::vector<G4double> photocath_ImR;
-    for (size_t i = 0; i < wavelength.size(); ++i)
-    {
-        photocath_EFF.push_back(1.);
-        photocath_ReR.push_back(1.92);
-        photocath_ImR.push_back(1.69);
-    }
+
+    std::vector<G4double> photocath_EFF = {
+        0.014930,0.000765,0.020564,0.027417,0.036249,0.043102,0.052087,
+        0.062594,0.074320,0.083915,0.095336,0.107214,0.118789,0.131886,
+        0.148485,0.161887,0.175593,0.187471,0.192801,0.202852,0.213208,
+        0.222497,0.234527,0.247776,0.260110,0.270921,0.280970,0.289953,
+        0.298328,0.310509,0.309442,0.308374,0.306696,0.302581,0.295725,
+        0.287497,0.278965,0.268452,0.257177,0.250473,0.242856,0.239351,
+        0.225184,0.215890,0.202484,0.189230,0.177651,0.171252,0.158303,
+        0.145050,0.129970,0.111386,0.093563,0.076807,0.060812,0.050451,
+         0.038414,0.030186,0.020738,0.011900,0.007630,0.004732,0.001071
+    };
+    std::vector<G4double> wavelength_EFF = {
+        279.580,280.098,281.241,283.159,285.203,287.248,289.292,292.231,
+        294.146,295.806,297.721,300.276,302.063,303.849,306.018,308.188,
+        309.846,312.272,314.318,315.850,318.405,320.833,324.028,327.479,
+        332.338,337.581,343.849,351.014,354.595,360.222,363.295,367.264,
+        373.153,380.196,386.344,394.541,403.378,413.240,423.614,430.274,
+        436.935,440.777,448.464,456.278,465.629,474.852,484.075,490.351,
+        498.421,505.212,510.980,519.054,527.383,535.328,543.400,553.262,
+                 564.789,574.394,586.432,598.086,610.505,622.028,635.983
+    };
+
+    std::vector<G4double> photocath_ReR = {
+        1.92808,1.99665,2.08162,2.14274,2.19938,2.25752,2.32311,2.39466,
+        2.48261,2.53776,2.59441,2.62720,2.66296,2.70022,2.74940,2.81052,
+        2.89250,2.95808,2.99236,3.00725,2.99977,2.99080,2.99674,3.02356,
+        3.05932,3.10553,3.16366,3.21434,3.25906,3.26202,3.22174,3.17998,
+        3.14716,3.10538,3.06808,3.03375,3.01286,2.98897,2.96805,2.95309,
+                                                 2.94706,2.95447,2.95741
+    };
+    std::vector<G4double> wavelength_ReR = {
+        380.414,384.560,388.903,392.950,397.194,401.735,406.375,411.606,
+        416.838,420.391,423.846,428.288,434.015,439.938,445.664,450.600,
+        457.312,464.223,469.850,476.169,483.871,490.882,498.485,506.482,
+        512.011,516.552,520.796,524.942,529.385,535.013,542.616,548.048,
+        554.664,563.947,572.735,582.906,590.016,599.989,615.195,630.105,
+                                                 650.544,666.935,679.376
+    };
+
+    std::vector<G4double> photocath_ImR = {
+        1.69256,1.68005,1.67927,1.69334,1.71289,1.71445,1.68630,1.65033,
+        1.61593,1.57213,1.52756,1.50958,1.50254,1.49941,1.49550,1.47830,
+        1.46422,1.43607,1.41809,1.39463,1.35631,1.32816,1.27498,1.18975,
+        1.13657,1.09747,1.07167,1.05994,1.05994,1.06541,1.06385,1.05134,
+        1.02084,0.98800,0.94343,0.89025,0.83395,0.78703,0.73933,0.69476,
+        0.65175,0.61969,0.57902,0.55165,0.52585,0.50004,0.47424,0.45234,
+        0.42888,0.40621,0.39370,0.37649,0.37180,0.36007,0.34599,0.33896,
+                                         0.33661,0.33661,0.33192,0.33114
+    };
+    std::vector<G4double> wavelength_ImR = {
+        380.455,385.870,392.092,397.506,402.919,407.960,412.503,415.615,
+        418.354,421.964,426.508,429.931,433.478,438.892,442.937,446.857,
+        451.214,455.633,460.051,464.283,468.515,470.881,474.989,480.093,
+        483.392,487.251,490.923,495.031,500.756,505.361,511.459,515.380,
+        519.052,522.102,525.338,528.886,532.061,535.049,538.037,540.340,
+        543.701,546.440,550.921,556.274,561.315,567.040,572.268,577.807,
+        586.519,595.107,600.272,608.487,617.012,626.471,634.188,642.215,
+                                         657.337,666.111,672.583,679.491
+    };
 
 
     G4MaterialPropertiesTable *mptPhotocath = new G4MaterialPropertiesTable();
-    mptPhotocath->AddProperty("EFFICIENCY", photonEnergy, photocath_EFF);
-    mptPhotocath->AddProperty("REALRINDEX", photonEnergy, photocath_ReR);
-    mptPhotocath->AddProperty("IMAGINARYRINDEX", photonEnergy, photocath_ImR);
+    mptPhotocath->AddProperty("EFFICIENCY", wavelength_EFF, photocath_EFF);
+    mptPhotocath->AddProperty("REALRINDEX", wavelength_ReR, photocath_ReR);
+    mptPhotocath->AddProperty("IMAGINARYRINDEX", wavelength_ImR, photocath_ImR);
 
     G4OpticalSurface *opPhotocathSurface = new G4OpticalSurface(
                     "opPhotocathSurface", glisur, polished, dielectric_metal);
@@ -426,4 +483,11 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
 */
 
     return physWorld;
+}
+
+void MyDetectorConstruction::ConstructSDandField()
+{
+    MySensitiveDetector *pmt = new MySensitiveDetector("pmt");
+
+    logicPhotocath->SetSensitiveDetector(pmt);
 }

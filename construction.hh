@@ -17,6 +17,7 @@
 #include "G4Colour.hh"
 #include "G4Tubs.hh"
 #include "G4LogicalSkinSurface.hh"
+#include "pmt.hh"
 
 class MyDetectorConstruction: public G4VUserDetectorConstruction
 {
@@ -66,7 +67,20 @@ private:
     G4LogicalVolume *logicLG_2;
     G4VPhysicalVolume *physLG_2;
 
+    G4Tubs *solidPMT;
+    G4Tubs *solidPhotocath;
 
+    G4LogicalVolume *logicPMT_1;
+    G4LogicalVolume *logicPMT_2;
+    G4LogicalVolume *logicPhotocath;
+
+    G4VPhysicalVolume *physPhotocath_1;
+    G4VPhysicalVolume *physPhotocath_2;
+
+    G4VPhysicalVolume *physPMT_1;
+    G4VPhysicalVolume *physPMT_2;
+
+    virtual void ConstructSDandField();
 
     G4OpticalSurface *opSlabAirSurface;
     G4LogicalBorderSurface *slabAirSurface;

@@ -9,7 +9,7 @@ namespace MeshNames
   {
     return BASE_NAME + std::to_string(i+1);
   }
-};
+}
 
 
 MyRunManager::MyRunManager() : G4RunManager()
