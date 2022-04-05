@@ -9,9 +9,10 @@ public:
     MySensitiveDetector(G4String);
     ~MySensitiveDetector();
 
+    virtual G4bool ProcessHits(G4Step *, G4TouchableHistory *);
 private:
     G4Track *track;
-    virtual G4bool ProcessHits(G4Step *, G4TouchableHistory *);
+    //virtual G4bool ProcessHits(G4Step *, G4TouchableHistory *);
 };
 
 #endif

@@ -14,7 +14,7 @@ MySensitiveDetector::~MySensitiveDetector()
 G4bool MySensitiveDetector::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist)
 {
     track = aStep->GetTrack();
-    track->SetTrackStatus(fStopAndKill);
+    //track->SetTrackStatus(fStopAndKill);
 
     G4double time = aStep->GetPreStepPoint()->GetLocalTime();
     //G4double time = aStep->GetPreStepPoint()->GetGlobalTime();

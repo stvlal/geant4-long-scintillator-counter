@@ -26,6 +26,7 @@ public:
     ~MyDetectorConstruction();
 
     virtual G4VPhysicalVolume *Construct();
+    G4LogicalVolume *GetScoringVolume() const { return fScoringVolume; }
 
     void SetCADFilename(std::string name)
     {
@@ -33,6 +34,8 @@ public:
     };
 
 private:
+    G4LogicalVolume *fScoringVolume;
+
     std::string filename;
 
     G4NistManager *nist;

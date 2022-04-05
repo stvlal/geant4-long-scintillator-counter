@@ -277,6 +277,8 @@ G4VPhysicalVolume *MyDetectorConstruction::Construct()
     logicPhotocath = new G4LogicalVolume(solidPhotocath,
                         photocathMat, "logicPhotocath");
 
+    fScoringVolume = logicPhotocath;
+
 
     physPhotocath_1 = new G4PVPlacement(0,
       G4ThreeVector(0., 0., height_pmt / 2.),logicPhotocath,"physPhotocath_1",
